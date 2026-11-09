@@ -3,8 +3,10 @@
  *   node scripts/netlify-check.mjs
  *
  * Loads netlify/functions/api.js exactly as Netlify would, invokes the handler
- * with Lambda-shaped events for the /api/* rewrite, and asserts netlify.toml
- * keeps the publish dir, the functions dir and the 200-status rewrite.
+ * with Lambda-shaped events for the /api/* rewrite, asserts the function serves
+ * the COMPLETE practice bank (276 targets, never a trimmed subset), and checks
+ * that netlify.toml keeps the publish dir, the functions dir, the build step,
+ * the external Speech SDK and the 200-status rewrite.
  */
 
 import fs from 'node:fs';
@@ -76,7 +78,29 @@ check('netlify.toml rewrites /api/* to the function with status 200',
   /from\s*=\s*"\/api\/\*"/.test(toml)
   && /to\s*=\s*"\/\.netlify\/functions\/api\/:splat"/.test(toml)
   && /status\s*=\s*200/.test(toml));
+check('netlify.toml regenerates public/scenarios.json on every deploy',
+  /command\s*=\s*"npm run build"/.test(toml));
+check('netlify.toml keeps the Azure Speech SDK out of the esbuild bundle',
+  /external_node_modules\s*=\s*\[[^\]]*microsoft-cognitiveservices-speech-sdk/.test(toml));
 check('the function entry point exists', fs.existsSync(path.join(ROOT, 'netlify/functions/api.js')));
+
+// The verified size of the bank (src/scenarios.js) — the function and the CDN
+// copy must both ship every one of these targets.
+const { SENTENCES } = require('../src/scenarios.js');
+const TARGETS = SENTENCES.length;
+check('the source bank holds the verified 276 targets', TARGETS === 276, `${TARGETS} targets`);
+
+const bankPath = path.join(ROOT, 'public/scenarios.json');
+let cdnBank = null;
+try {
+  cdnBank = JSON.parse(fs.readFileSync(bankPath, 'utf8'));
+} catch (err) {
+  cdnBank = null;
+}
+check('the CDN fallback bank is published with the static site', Boolean(cdnBank)
+  && Array.isArray(cdnBank.scenarios) && cdnBank.scenarios.length === TARGETS,
+  cdnBank && Array.isArray(cdnBank.scenarios) ? `${cdnBank.scenarios.length}/${TARGETS} targets` : 'public/scenarios.json missing');
+
 
 const { handler } = require('../netlify/functions/api.js');
 check('the function exports a Lambda handler', typeof handler === 'function');
@@ -99,10 +123,11 @@ const scenarios = await invoke(handler, event({
   pathname: '/api/scenarios',
   headers: { 'x-access-code': 'netlify-check-code' }
 }));
-check('GET /api/scenarios through the function returns the library',
+check('GET /api/scenarios through the function returns the COMPLETE library',
   scenarios.statusCode === 200 && Array.isArray(scenarios.data.scenarios)
-    && scenarios.data.scenarios.length >= 90,
-  `status ${scenarios.statusCode}`);
+    && scenarios.data.scenarios.length === TARGETS,
+  `status ${scenarios.statusCode} — ${scenarios.data && scenarios.data.scenarios
+    ? scenarios.data.scenarios.length : 0}/${TARGETS} targets`);
 
 const chat = await invoke(handler, event({
   method: 'POST',

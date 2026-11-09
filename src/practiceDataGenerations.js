@@ -7,7 +7,8 @@
  * carries its own `ja` translation so the 日本語 toggle works without an API call.
  *
  * `GENERATION_CATEGORIES` also contains the "Shuffle / Mix Generations" entry:
- * every cohort line pooled and shuffled once at load for quick-fire practice.
+ * every cohort line pooled and shuffled once at load (fixed seed, so the static
+ * public/scenarios.json snapshot is reproducible) for quick-fire practice.
  */
 
 const GENERATION_GROUP = { id: 'generations', label: 'Generations' };
@@ -159,11 +160,33 @@ COHORTS.push(
   }
 );
 
-/** Fisher–Yates shuffle on a copy (Math.random is fine: order is cosmetic). */
+/**
+ * Deterministic Fisher–Yates shuffle on a copy.
+ *
+ * The order is cosmetic (the picker opens "Shuffle / Mix" on a random line every
+ * time it is selected), but it has to be STABLE: `npm run build` snapshots this
+ * library into public/scenarios.json, and a Math.random shuffle would make every
+ * build produce a different file (dirty git tree, needless CDN cache busts).
+ */
+const MIX_SEED = 0x5eed1e;
+
+/** Mulberry32: tiny deterministic PRNG, plenty for a cosmetic order. */
+function seededRandom(seed) {
+  let state = seed >>> 0;
+  return () => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 function shuffled(list) {
+  const random = seededRandom(MIX_SEED);
   const out = [...list];
   for (let i = out.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(random() * (i + 1));
     [out[i], out[j]] = [out[j], out[i]];
   }
   return out;
@@ -220,7 +243,8 @@ const MIX_CATEGORY = {
   medium: 'mixed',
   keywords: [...new Set(COHORTS.flatMap((cohort) => cohort.keywords))].slice(0, 40),
   starters: shuffled(pooledItems()).slice(0, 3).map((item) => item.text),
-  // Pooled + shuffled once at load: a fresh server start re-rolls the order.
+  // Pooled + shuffled once at load with a fixed seed (reproducible builds);
+  // the picker itself opens the pool on a random line every time it is picked.
   items: shuffled(pooledItems())
 };
 

@@ -5,8 +5,9 @@
  *
  * Imports the same pure helpers the UI uses (public/js/library.js) plus the
  * server library (src/scenarios.js) and asserts that every tier/category/medium
- * combination is populated, that option labels follow the spec format, and that
- * every one of the practice targets is reachable through the picker.
+ * combination is populated, that option labels follow the spec format, that
+ * every one of the 276 practice targets is reachable through the picker, and
+ * that the CDN snapshot (public/scenarios.json) ships the very same bank.
  */
 
 import { readFile } from 'node:fs/promises';
@@ -30,6 +31,11 @@ function check(label, condition, detail) {
 const tiers = MEDIUM_TIERS.map((tier) => tier.id);
 check('four medium tiers (All / Scenarios / Movies / Songs)',
   tiers.join(',') === 'all,scenario,movie,song', tiers.join(','));
+
+/* 0. The verified target count (README: "276 targets"). */
+const EXPECTED_TARGETS = 276;
+check('the verified 276-target bank is intact', SENTENCES.length === EXPECTED_TARGETS,
+  `${SENTENCES.length} targets`);
 
 /* 1. Every category and sentence carries medium metadata. */
 const badCategories = CATEGORIES.filter((category) => !category.medium);
@@ -131,6 +137,28 @@ const totals = tiers.map((tier) => `${tier}:${sentencesForSelection(SENTENCES, {
 check('medium totals add up to the whole library',
   tiers.slice(1).reduce((sum, tier) => sum + sentencesForSelection(SENTENCES, { tier, categoryId: 'all' }).length, 0)
   === SENTENCES.length, totals.join(' '));
+
+/* 7. The CDN copy shipped with the site carries the SAME complete bank. */
+let bank = null;
+try {
+  bank = JSON.parse(await readFile(new URL('../public/scenarios.json', import.meta.url), 'utf8'));
+} catch (err) {
+  bank = null;
+}
+check('public/scenarios.json (the CDN fallback bank) is published', Boolean(bank));
+const bankTargets = bank && Array.isArray(bank.scenarios) ? bank.scenarios : [];
+check('the CDN bank carries every target (run `npm run build` after editing the data)',
+  bankTargets.length === SENTENCES.length, `${bankTargets.length}/${SENTENCES.length}`);
+const bankById = new Map(bankTargets.map((sentence) => [sentence.id, sentence]));
+check('the CDN bank matches src/scenarios.js target for target',
+  bankById.size === SENTENCES.length
+  && SENTENCES.every((sentence) => bankById.has(sentence.id)
+    && bankById.get(sentence.id).text === sentence.text),
+  `${bankById.size}/${SENTENCES.length} ids`);
+check('the CDN bank ships the full category + vowel tables',
+  Boolean(bank) && Array.isArray(bank.categories) && bank.categories.length === CATEGORIES.length
+  && Boolean(bank.vowels) && Object.keys(bank.vowels).length > 0,
+  bank ? `${bank.categories.length} categories, ${Object.keys(bank.vowels || {}).length} vowel entries` : 'missing');
 
 console.log(failures ? `\n${failures} check(s) failed.` : `\nAll selection checks passed (${SENTENCES.length} targets).`);
 process.exit(failures ? 1 : 0);

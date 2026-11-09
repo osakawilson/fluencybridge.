@@ -9,6 +9,9 @@
  */
 
 const BASE = process.argv[2] || process.env.BASE_URL || 'http://localhost:3000';
+// The verified size of the practice bank (src/scenarios.js): the API must never
+// serve a trimmed subset, and the CDN copy (public/scenarios.json) mirrors it.
+const EXPECTED_TARGETS = require('../src/scenarios').SENTENCES.length;
 // Fresh per run: the daily per-student quota counts (assess/tts/chat) against
 // this UUID, so repeated smoke tests never exhaust one bucket.
 const STUDENT_ID = require('node:crypto').randomUUID();
@@ -69,7 +72,9 @@ async function postJson(path, body) {
   const mixCategory = generationCategories.find((c) => c.mix);
   const combinedCategory = generationCategories.find((c) => c.combined);
   const cohortTotal = cohortCategories.reduce((sum, c) => sum + c.sentenceCount, 0);
-  check('GET /api/scenarios', scenarios.scenarios.length >= 90, `${scenarios.scenarios.length} sentences`);
+  check('GET /api/scenarios returns the complete target bank',
+    scenarios.scenarios.length === EXPECTED_TARGETS,
+    `${scenarios.scenarios.length}/${EXPECTED_TARGETS} sentences`);
   check('practice categories', scenarios.categories.length === 16, scenarios.categories.map((c) => c.id).join(','));
   check('practice groups', scenarios.groups.length === 4, scenarios.groups.map((g) => g.label).join(' | '));
   check('generational cohorts (6) + combined + shuffle pool',

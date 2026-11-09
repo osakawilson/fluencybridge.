@@ -46,14 +46,15 @@ loud `MOCK DATA` banner + per-provider `mock` pills. Nothing fabricated is ever
 presented as live data.
 
 ```bash
-npm run dev               # node --watch server.js
+npm run build             # regenerates public/scenarios.json (all 276 targets)
+npm run dev               # node --watch server.js (runs build first)
 npm run test              # unit + security + quota + Netlify checks, then the smoke test
 npm run test:unit         # offline calibration unit tests (no server, no keys)
 npm run test:security     # offline gate + rate-limit checks (boots a mock server)
 npm run test:usage        # offline per-student quota + Azure circuit-breaker checks
 npm run test:netlify      # invokes netlify/functions/api.js with Lambda events
 npm run check:vowels      # offline IPA/vowel-alignment check (no keys needed)
-npm run check:selection   # offline three-tier picker check (no keys needed)
+npm run check:selection   # offline three-tier picker check + CDN bank parity (276)
 npm run check:live        # Azure TTS -> 16 kHz WAV -> /api/assess (verifies keys)
 ```
 
@@ -266,6 +267,11 @@ movie lines, 10 song lyrics, and 180 generational rows (6 cohorts × 10, plus th
 pool). Every sentence declares a `medium`, which is what the three-tier picker
 filters on (`public/js/library.js`).
 
+The identical payload is mirrored at **`GET /scenarios.json`** (static, served by
+the CDN, no access code) by `npm run build`; the client falls back to it when
+the gated endpoint is unavailable, so the picker never degrades below 276
+targets.
+
 ### Generational cohorts (Practice Library)
 
 `src/practiceDataGenerations.js` keeps the cohort data out of `scenarios.js` and
@@ -287,7 +293,19 @@ A cohort's category-level `medium` is its majority medium plus the full `media`
 list; the per-sentence `medium` is what the picker filters on, so
 *Movies → Boomers* lists only the four Boomer film lines and *Songs → Boomers*
 the six song lines. The **Shuffle / Mix** pool re-pools all 60 lines (shuffled
-at server start) and opens on a random line each time it is picked.
+once at load with a fixed seed, so `npm run build` is byte-reproducible) and
+opens on a random line each time it is picked.
+
+### `public/scenarios.json` (the CDN copy)
+
+`npm run build` (`scripts/build-scenarios.mjs`) snapshots the same payload into
+`public/scenarios.json`, which Netlify publishes as a static asset. The browser
+always prefers the gated `GET /api/scenarios`, but if that request fails — cold
+start, function packaging error, expired access code, 502/504 — it loads this
+file and keeps the **full 276-target picker** instead of the 3-line emergency
+stub in `public/js/app.js`. The build refuses to write the file unless
+`src/scenarios.js` really holds all 276 targets, and `npm run check:selection`
+fails if the snapshot drifts from the source.
 
 ## Word-score calibration (strict, L1-aware)
 
@@ -437,14 +455,29 @@ npx netlify deploy --build --prod      # or connect the Git repo in the Netlify 
 
 `netlify.toml` wires everything:
 
-* **Static UI** — `publish = "public"`, so `index.html`, `js/*` and `styles.css`
-  are served straight from the Netlify CDN (never through the function).
+* **Static UI** — `publish = "public"`, so `index.html`, `js/*`, `styles.css`
+  and the generated `scenarios.json` are served straight from the Netlify CDN
+  (never through the function).
+* **Build step** — `command = "npm run build"` regenerates
+  `public/scenarios.json` from `src/scenarios.js` on every deploy and aborts if
+  the bank is not the full 276 targets.
 * **One function** — `netlify/functions/api.js` wraps the same Express app with
-  `@vendia/serverless-express`; it is bundled with esbuild.
+  `@vendia/serverless-express`; it is bundled with esbuild, with
+  `microsoft-cognitiveservices-speech-sdk` kept external (the SDK ships native
+  binaries and loads assets at require time, so inlining it can make the whole
+  function fail to load — which is what used to shrink the UI to 3 sentences).
 * **One rewrite** — `/api/*` → `/.netlify/functions/api/:splat` with **status
   200**, so the browser still sees `/api/assess` and Express routing, the
   access-code gate, the rate limits and the daily quotas behave exactly as in
   `npm start`.
+
+The client keeps the sentence bank resilient:
+
+1. `GET /api/scenarios` (gated function) — preferred;
+2. `/scenarios.json` (CDN snapshot) — used automatically if step 1 fails, still
+   all 276 targets;
+3. a 3-line emergency stub in `public/js/app.js` — only when the browser is
+   fully offline, and it says so in a toast + `library_source` in the export.
 
 Secrets belong in **Site settings → Environment variables** (`AZURE_SPEECH_KEY`,
 `AZURE_SPEECH_REGION`, `DEEPSEEK_API_KEY`, `ACCESS_CODE`, `USER_DAILY_CALL_LIMIT`,
@@ -539,6 +572,7 @@ src/azureAssessment.js    Azure PA (HundredMark, phonemes, push-stream PCM)
 src/deepseek.js           DeepSeek JSON mode, SSE streaming, constraint checks
 src/azureTts.js           Optional Azure Neural TTS (SSML rate → 0.85)
 src/mock.js               Deterministic mock assessment + template recast
+scripts/build-scenarios.mjs  Snapshot src/scenarios.js → public/scenarios.json (276)
 scripts/smoke-test.js     End-to-end API smoke test (mock-friendly)
 scripts/security-check.mjs Offline passcode-gate + rate-limit checks (no keys needed)
 scripts/usage-check.mjs   Offline per-student quota + circuit-breaker checks
@@ -549,6 +583,7 @@ scripts/selection-check.mjs  Offline three-tier picker check (no keys needed)
 scripts/live-check.js     Azure TTS -> 16 kHz WAV -> /api/assess key verifier
 public/index.html         Dual-pane shell (three-tier picker + target card)
 public/styles.css         Design system (light/dark, score bands, JSON viewer)
+public/scenarios.json     Generated CDN copy of the full 276-target practice bank
 public/js/app.js          State, recording pipeline, rendering, export
 public/js/library.js      Pure medium → category → sentence filter (tested offline)
 public/js/vowels.js       Grapheme → IPA annotator (lexicon-first, rules as fallback)

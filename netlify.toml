@@ -9,6 +9,10 @@
 # Site settings → Environment variables. .env is never deployed.
 
 [build]
+  # Regenerates public/scenarios.json (the complete 276-target bank served by
+  # the CDN) from src/scenarios.js on every deploy, so the static copy can
+  # never drift from the source of truth.
+  command = "npm run build"
   publish = "public"
   functions = "netlify/functions"
 
@@ -17,6 +21,11 @@
 
 [functions]
   node_bundler = "esbuild"
+  # The Azure Speech SDK ships native binaries and loads assets at require
+  # time; inlining it with esbuild can make the function fail to load, which
+  # used to leave the UI on its 3-line offline stub. Ship it as a real
+  # node_module instead.
+  external_node_modules = ["microsoft-cognitiveservices-speech-sdk"]
 
 # /api/assess -> /.netlify/functions/api/assess (200 = rewrite, not a redirect)
 [[redirects]]

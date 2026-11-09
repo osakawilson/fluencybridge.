@@ -5,8 +5,12 @@
   "description": "FluencyBridge Inspector - AI-mediated speaking assessment + CEFR A2 roleplay research PoC (Azure Pronunciation Assessment, DeepSeek Flash JSON recast, browser/Azure Neural TTS).",
   "main": "server.js",
   "scripts": {
+    "build": "node scripts/build-scenarios.mjs",
+    "prestart": "npm run build",
     "start": "node server.js",
+    "predev": "npm run build",
     "dev": "node --watch server.js",
+    "pretest": "npm run build",
     "test": "npm run test:unit && npm run test:security && npm run test:usage && npm run test:netlify && node scripts/smoke-test.js",
     "test:unit": "node scripts/scoring-check.mjs",
     "test:security": "node scripts/security-check.mjs",

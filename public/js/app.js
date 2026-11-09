@@ -20,6 +20,12 @@ import {
   sentencesForSelection, sentenceOptionText, categoryOptionText, sentenceMedium
 } from './library.js';
 
+/**
+ * LAST-RESORT stub (3 of 276 targets). Only used when BOTH the gated API
+ * (`GET /api/scenarios`) AND the complete CDN copy (`/scenarios.json`, written
+ * by `npm run build`) are unreachable — e.g. a fully offline browser. The real
+ * fallback is `loadStaticLibrary()` below; never grow this array instead.
+ */
 const FALLBACK_SENTENCES = [
   {
     id: 'cafe-1', category: 'cafe', categoryLabel: 'Cafe & Dining', group: 'scenario',
@@ -81,6 +87,24 @@ const FALLBACK_GROUPS = [
   { id: 'song', label: 'Famous Song Lyrics' },
   { id: 'generations', label: 'Generations' }
 ];
+
+/**
+ * Complete offline copy of the practice bank, generated from src/scenarios.js
+ * into `public/scenarios.json` by `npm run build` and served from the Netlify
+ * CDN. Loaded only when `GET /api/scenarios` fails, so a cold/erroring function
+ * or an expired access code still yields all 276 targets instead of the stub.
+ * @returns {Promise<object|null>} an /api/scenarios-shaped payload, or null
+ */
+async function loadStaticLibrary() {
+  try {
+    const response = await fetch('/scenarios.json', { headers: { Accept: 'application/json' } });
+    if (!response.ok) return null;
+    const payload = await response.json();
+    return payload && Array.isArray(payload.scenarios) && payload.scenarios.length ? payload : null;
+  } catch (err) {
+    return null;
+  }
+}
 
 const dom = {
   categorySelect: $('#categorySelect'),
@@ -168,6 +192,8 @@ const state = {
   medium: 'all',
   categoryId: 'all',
   vowelLexiconSize: 0,
+  // Where the picker's bank came from: api | static (CDN copy) | stub.
+  librarySource: 'api',
   mode: viewFlags.mode,
   // Demo default: scripted practice against the model sentence.
   scripted: viewFlags.scripted,
@@ -227,15 +253,28 @@ async function init() {
   }
   renderVoiceOptions();
 
-  if (scenarios.status === 'fulfilled' && scenarios.value && Array.isArray(scenarios.value.scenarios)) {
+  if (scenarios.status === 'fulfilled' && scenarios.value
+    && Array.isArray(scenarios.value.scenarios) && scenarios.value.scenarios.length) {
     applyLibrary(scenarios.value);
+    state.librarySource = 'api';
   } else {
-    applyLibrary({
-      categories: fallbackCategories(),
-      groups: FALLBACK_GROUPS,
-      scenarios: FALLBACK_SENTENCES,
-      default: FALLBACK_SENTENCES[0].id
-    });
+    // The gated function is unavailable: serve the complete CDN copy before
+    // ever shrinking the picker to the 3-line stub.
+    const staticLibrary = await loadStaticLibrary();
+    if (staticLibrary) {
+      applyLibrary(staticLibrary);
+      state.librarySource = 'static';
+      toast(`Live library unavailable — loaded all ${staticLibrary.scenarios.length} practice targets from the offline CDN copy.`, 'warn', 6000);
+    } else {
+      applyLibrary({
+        categories: fallbackCategories(),
+        groups: FALLBACK_GROUPS,
+        scenarios: FALLBACK_SENTENCES,
+        default: FALLBACK_SENTENCES[0].id
+      });
+      state.librarySource = 'stub';
+      toast(`Practice library unreachable — showing only the ${FALLBACK_SENTENCES.length}-line emergency stub. Check the deployment.`, 'error', 8000);
+    }
   }
 
   recorder = new MicrophoneRecorder({
@@ -1829,6 +1868,8 @@ function exportSession() {
     providers: state.health ? state.health.providers : null,
     server_limits: state.health ? state.health.limits : null,
     scenario: state.scenarioId,
+    library_source: state.librarySource,
+    library_size: state.sentences.length,
     scripted_mode: state.scripted,
     tts_engine: state.engine,
     speech_rate: SPEECH_RATE,

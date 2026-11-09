@@ -1,0 +1,10 @@
+node_modules/
+# Secrets: never commit real credentials. `.env.example` is the tracked template.
+.env
+.env.*
+!.env.example
+*.log
+npm-debug.log*
+.DS_Store
+.netlify/
+research-export-*.json

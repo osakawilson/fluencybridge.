@@ -1,0 +1,39 @@
+{
+  "name": "fluencybridge-inspector",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FluencyBridge Inspector - AI-mediated speaking assessment + CEFR A2 roleplay research PoC (Azure Pronunciation Assessment, DeepSeek Flash JSON recast, browser/Azure Neural TTS).",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "npm run test:unit && npm run test:security && npm run test:usage && npm run test:netlify && node scripts/smoke-test.js",
+    "test:unit": "node scripts/scoring-check.mjs",
+    "test:security": "node scripts/security-check.mjs",
+    "test:usage": "node scripts/usage-check.mjs",
+    "test:netlify": "node scripts/netlify-check.mjs",
+    "check:vowels": "node scripts/vowel-check.mjs",
+    "check:selection": "node scripts/selection-check.mjs",
+    "check:live": "node scripts/live-check.js"
+  },
+  "engines": {
+    "node": ">=18.17"
+  },
+  "keywords": [
+    "esl",
+    "pronunciation-assessment",
+    "azure-speech",
+    "deepseek",
+    "cefr",
+    "research-poc"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@netlify/blobs": "^11.1.8",
+    "@vendia/serverless-express": "^4.12.6",
+    "dotenv": "^18.0.10",
+    "express": "^4.22.3",
+    "express-rate-limit": "^8.7.3",
+    "microsoft-cognitiveservices-speech-sdk": "^1.53.0"
+  }
+}

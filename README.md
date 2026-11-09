@@ -466,6 +466,12 @@ npx netlify deploy --build --prod      # or connect the Git repo in the Netlify 
   `microsoft-cognitiveservices-speech-sdk` kept external (the SDK ships native
   binaries and loads assets at require time, so inlining it can make the whole
   function fail to load — which is what used to shrink the UI to 3 sentences).
+* **Lambda event shim** — Netlify invokes functions with a bare Lambda event
+  that has **no `requestContext`**, and `@vendia/serverless-express` refuses to
+  guess the event source without it (`Unable to determine event source based on
+  event`), answering **502** on every `/api/*` call. The handler normalises each
+  event into the API Gateway v1 shape first; `npm run test:netlify` now drives it
+  with a faithful Netlify event (and keeps one legacy API Gateway fixture).
 * **One rewrite** — `/api/*` → `/.netlify/functions/api/:splat` with **status
   200**, so the browser still sees `/api/assess` and Express routing, the
   access-code gate, the rate limits and the daily quotas behave exactly as in

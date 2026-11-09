@@ -28,27 +28,41 @@ function check(label, condition, detail) {
   if (!condition) failures += 1;
 }
 
-/** API Gateway v1-shaped event, which is what Netlify Functions receive. */
-function event({ method = 'GET', pathname, headers = {}, body = null }) {
+/**
+ * Netlify-shaped Lambda event. Netlify sends `path`, `httpMethod`, `rawUrl`,
+ * `headers` and `body` but **no `requestContext`** — faking it here is what let
+ * a 502 ("Unable to determine event source based on event") reach production,
+ * so the fixture must stay faithful to the platform.
+ */
+function event({ method = 'GET', pathname, headers = {}, body = null, legacy = false }) {
+  const allHeaders = { 'x-nf-client-connection-ip': '203.0.113.7', ...headers };
   // Netlify always sends multiValueHeaders; serverless-express prefers them
   // over `headers`, so mirror the two exactly like the platform does.
   const multiValueHeaders = Object.fromEntries(
-    Object.entries(headers).map(([key, value]) => [key, [value]])
+    Object.entries(allHeaders).map(([key, value]) => [key, [value]])
   );
-  return {
+  const base = {
     httpMethod: method,
     path: pathname,
-    resource: pathname,
-    headers,
+    rawUrl: `https://fluency-bridge.netlify.app${pathname}`,
+    rawQuery: '',
+    headers: allHeaders,
     multiValueHeaders,
     queryStringParameters: null,
     multiValueQueryStringParameters: null,
     pathParameters: null,
-    stageVariables: null,
     body,
     isBase64Encoded: false,
-    requestContext: { path: pathname, httpMethod: method, stage: 'prod' }
+    requestId: '01HZZZZZZZZZZZZZZZZZZZZZZZ'
   };
+  // Legacy API Gateway v1 shape, kept to prove old fixtures still work.
+  if (legacy) {
+    return {
+      ...base,
+      requestContext: { path: pathname, httpMethod: method, stage: 'prod' }
+    };
+  }
+  return base;
 }
 
 async function invoke(handler, evt) {
@@ -102,13 +116,29 @@ check('the CDN fallback bank is published with the static site', Boolean(cdnBank
   cdnBank && Array.isArray(cdnBank.scenarios) ? `${cdnBank.scenarios.length}/${TARGETS} targets` : 'public/scenarios.json missing');
 
 
-const { handler } = require('../netlify/functions/api.js');
+const { handler, toApiGatewayV1Event } = require('../netlify/functions/api.js');
 check('the function exports a Lambda handler', typeof handler === 'function');
+
+/* Event normalisation: Netlify sends no requestContext, so the shim must add it. */
+const sampleEvent = event({ pathname: '/api/health' });
+check('the Netlify fixture really has no requestContext (the 502 regression)',
+  sampleEvent.requestContext === undefined);
+const normalised = toApiGatewayV1Event(sampleEvent);
+check('the shim adds the API Gateway v1 envelope serverless-express needs',
+  normalised.requestContext && normalised.requestContext.httpMethod === 'GET'
+    && normalised.requestContext.stage === 'prod' && normalised.httpMethod === 'GET'
+    && normalised.path === '/api/health');
+check('a direct function URL is mapped back onto the /api/* route',
+  toApiGatewayV1Event(event({ pathname: '/.netlify/functions/api/health' })).path === '/api/health');
 
 const health = await invoke(handler, event({ pathname: '/api/health' }));
 check('GET /api/health through the function returns 200 JSON',
   health.statusCode === 200 && health.data && health.data.ok === true,
-  `status ${health.statusCode}`);
+  `status ${health.statusCode}${health.data && health.data.errorMessage ? ` — ${health.data.errorMessage}` : ''}`);
+const legacyHealth = await invoke(handler, event({ pathname: '/api/health', legacy: true }));
+check('a legacy API Gateway-shaped event still works',
+  legacyHealth.statusCode === 200 && legacyHealth.data.ok === true,
+  `status ${legacyHealth.statusCode}`);
 check('the function reports the daily quota limits',
   health.data && health.data.usage && health.data.usage.user_daily_call_limit === 60
     && health.data.usage.daily_azure_call_limit === 1500,

@@ -589,14 +589,22 @@ Secrets belong in **Site settings → Environment variables** (`AZURE_SPEECH_KEY
 `DAILY_AZURE_CALL_LIMIT`, …). `.env` is gitignored and never deployed.
 
 **v1.1.0 roster + telemetry on Netlify.** `data/students.json` is gitignored, so
-paste the same JSON into a `STUDENT_ROSTER_JSON` environment variable (one line,
-no newlines) or participant sign-in answers `503 roster_unavailable` and only the
-Guest tab works. Scored turns land in the Blobs store `fluency_interactions`;
-`GET /api/admin/export-csv` (with `ADMIN_KEY` set as `X-Admin-Key`) downloads the
-class CSV, or read `?format=json` from the inspector. Verified with:
+paste the same JSON into a `STUDENT_ROSTER_JSON` environment variable or
+participant sign-in answers `503 roster_unavailable` and only the Guest tab
+works. Netlify caps an environment value at **5,000 characters**, so send the
+compact one-line form (101 students ≈ 4.5 KB):
 
 ```bash
-npx netlify env:set STUDENT_ROSTER_JSON "$(tr -d '\n' < data/students.json)"
+node -e "console.log(JSON.stringify(require('./data/students.json')))" > /tmp/roster.json
+npx netlify env:set STUDENT_ROSTER_JSON "$(cat /tmp/roster.json)" --secret --force
+```
+
+Scored turns land in the Blobs store `fluency_interactions`;
+`GET /api/admin/export-csv` (with `ADMIN_KEY` set as `X-Admin-Key`) downloads the
+class CSV, or read `?format=json` from the inspector. Verify the deployment:
+
+```bash
+curl -s https://<site>/api/health | jq '.app_version, .auth, .telemetry'
 curl -X POST https://<site>/api/auth/login -H 'Content-Type: application/json' \
      -d '{"studentId":"LB-001","pin":"1887"}'
 ```

@@ -11,6 +11,8 @@
 const BASE = process.argv[2] || process.env.BASE_URL || 'http://localhost:3000';
 const fs = require('node:fs');
 const path = require('node:path');
+// A local lab may set ADMIN_KEY (the export gate); read .env like server.js does.
+require('dotenv').config();
 // The verified size of the practice bank (src/scenarios.js): the API must never
 // serve a trimmed subset, and the CDN copy (public/scenarios.json) mirrors it.
 const EXPECTED_TARGETS = require('../src/scenarios').SENTENCES.length;
@@ -121,14 +123,30 @@ async function postJson(path, body) {
       && interaction.data.record.revealed === true,
     `${interaction.status} ${interaction.data && interaction.data.id} (${interaction.data && interaction.data.stored})`);
 
-  const exportRes = await fetch(`${BASE}/api/admin/export-csv`);
+  // The server's own /api/health says whether the export gate is active; trust
+  // that over the local .env (the smoke test can target a remote deployment).
+  const exportGated = Boolean(health.telemetry && health.telemetry.export_requires_admin_key);
+  const adminKey = String(process.env.ADMIN_KEY || '').trim();
+  if (exportGated && adminKey) {
+    const denied = await fetch(`${BASE}/api/admin/export-csv`);
+    check('GET /api/admin/export-csv requires the admin key when ADMIN_KEY is set',
+      denied.status === 401, `${denied.status}`);
+  }
+  const exportRes = await fetch(`${BASE}/api/admin/export-csv`, {
+    headers: exportGated && adminKey ? { 'x-admin-key': adminKey } : {}
+  });
   const exportCsv = await exportRes.text();
-  check('GET /api/admin/export-csv exports the log as CSV',
-    exportRes.status === 200
-      && String(exportRes.headers.get('content-type') || '').includes('text/csv')
-      && exportCsv.startsWith('id,timestamp,app_version,studentId,pseudonym,role,targetId,medium,sentence')
-      && exportCsv.includes(interaction.data.id),
-    `${exportRes.status} · ${exportCsv.split('\n').length - 1} row(s)`);
+  if (exportGated && !adminKey) {
+    check('GET /api/admin/export-csv refuses an unauthenticated export',
+      exportRes.status === 401, `${exportRes.status} — set ADMIN_KEY locally to test the download`);
+  } else {
+    check('GET /api/admin/export-csv exports the log as CSV',
+      exportRes.status === 200
+        && String(exportRes.headers.get('content-type') || '').includes('text/csv')
+        && exportCsv.startsWith('id,timestamp,app_version,studentId,pseudonym,role,targetId,medium,sentence')
+        && exportCsv.includes(interaction.data.id),
+      `${exportRes.status} · ${exportCsv.split('\n').length - 1} row(s)`);
+  }
 
   if (/localhost|127\.0\.0\.1/.test(BASE)) {
     const logFile = path.join(__dirname, '..', 'data', 'interactions.json');

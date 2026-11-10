@@ -19,6 +19,8 @@ process.env.FORCE_MOCK = 'true';
 process.env.USAGE_STORE = 'memory';
 process.env.INTERACTIONS_STORE = 'memory';
 process.env.ACCESS_CODE = 'netlify-check-code';
+// A local .env may set ADMIN_KEY; pin it so the export-gate assertions are stable.
+process.env.ADMIN_KEY = 'netlify-check-admin-key';
 
 const require = createRequire(import.meta.url);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -212,9 +214,17 @@ check('POST /api/interactions through the function stores a record',
     && interaction.data.record.id.startsWith('int_'),
   `${interaction.statusCode} ${interaction.data && interaction.data.id}`);
 
-const exportCsv = await invoke(handler, event({
+const deniedExport = await invoke(handler, event({
   pathname: '/api/admin/export-csv',
   headers: { 'x-access-code': 'netlify-check-code' }
+}));
+check('GET /api/admin/export-csv requires the admin key when configured',
+  deniedExport.statusCode === 401 && deniedExport.data.error === 'admin_key_required',
+  `${deniedExport.statusCode} ${deniedExport.data && deniedExport.data.error}`);
+
+const exportCsv = await invoke(handler, event({
+  pathname: '/api/admin/export-csv',
+  headers: { 'x-access-code': 'netlify-check-code', 'x-admin-key': 'netlify-check-admin-key' }
 }));
 check('GET /api/admin/export-csv through the function returns CSV',
   exportCsv.statusCode === 200

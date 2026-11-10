@@ -13,6 +13,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 
@@ -93,6 +94,15 @@ check('publicStudent() returns the pseudonym only',
   === JSON.stringify({ studentId: 'LB-002', pseudonym: 'AmberEagle' }));
 check('a PIN is never part of a verified student object',
   !Object.prototype.hasOwnProperty.call(roster.verifyStudent('LB-003', '1993'), 'pin'));
+
+// Netlify's Lambda environment budget is 4 KB, so the env var also accepts a
+// gzip+base64 payload (scripts/roster-env.mjs prints whichever form fits).
+const compressedRoster = zlib.gzipSync(Buffer.from(JSON.stringify(ROSTER), 'utf8')).toString('base64');
+check('STUDENT_ROSTER_JSON also accepts gzip+base64 (Netlify 4 KB budget)',
+  roster.decodeRosterPayload(compressedRoster).size === 3,
+  `${compressedRoster.length} chars for 3 students`);
+check('a malformed roster payload is rejected instead of throwing',
+  roster.decodeRosterPayload('not-a-roster') === null && roster.decodeRosterPayload('') === null);
 
 /* ------------------------------- telemetry ------------------------------- */
 

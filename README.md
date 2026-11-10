@@ -589,14 +589,16 @@ Secrets belong in **Site settings → Environment variables** (`AZURE_SPEECH_KEY
 `DAILY_AZURE_CALL_LIMIT`, …). `.env` is gitignored and never deployed.
 
 **v1.1.0 roster + telemetry on Netlify.** `data/students.json` is gitignored, so
-paste the same JSON into a `STUDENT_ROSTER_JSON` environment variable or
-participant sign-in answers `503 roster_unavailable` and only the Guest tab
-works. Netlify caps an environment value at **5,000 characters**, so send the
-compact one-line form (101 students ≈ 4.5 KB):
+`data/students.json` is gitignored, so inject the roster through
+`STUDENT_ROSTER_JSON` or participant sign-in answers `503 roster_unavailable`
+and only the Guest tab works. Netlify's Lambda compatibility mode caps the
+**whole function environment at 4 KB**, so `npm run roster:env` prints the
+compact JSON when it fits and the gzip+base64 form otherwise (101 students:
+4.5 KB JSON → 1.5 KB compressed); `src/roster.js` decodes either form.
 
 ```bash
-node -e "console.log(JSON.stringify(require('./data/students.json')))" > /tmp/roster.json
-npx netlify env:set STUDENT_ROSTER_JSON "$(cat /tmp/roster.json)" --secret --force
+npx netlify env:set STUDENT_ROSTER_JSON "$(npm run --silent roster:env)" \
+    --secret --force --context production
 ```
 
 Scored turns land in the Blobs store `fluency_interactions`;

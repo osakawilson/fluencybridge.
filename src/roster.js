@@ -14,12 +14,18 @@
  *   { "LB-001": { "name": "AmberBeacon", "pin": "1887" } }   // data/students.json
  *   [ { "studentId": "LB-001", "name": "AmberBeacon", "pin": "1887" } ]
  *
+ * Netlify's Lambda compatibility mode caps the *total* environment at 4 KB, and
+ * a 101-student roster is 4.5 KB of JSON. `STUDENT_ROSTER_JSON` therefore also
+ * accepts the same JSON gzipped and base64-encoded (1.5 KB for 101 students);
+ * `scripts/roster-env.mjs` prints whichever form fits.
+ *
  * `name` is the pseudonym from the login card (never the legal name).
  */
 
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
+const zlib = require('node:zlib');
 
 const ROOT = path.join(__dirname, '..');
 const ROSTER_FILE = process.env.STUDENT_ROSTER_PATH
@@ -89,6 +95,23 @@ function parseRoster(raw) {
   return entries;
 }
 
+/**
+ * Decodes a `STUDENT_ROSTER_JSON` value: plain JSON, or gzip+base64 JSON for
+ * the 4 KB Netlify Lambda environment budget.
+ * @returns {Map|null}
+ */
+function decodeRosterPayload(raw) {
+  const text = String(raw === undefined || raw === null ? '' : raw).trim();
+  if (!text) return null;
+  if (text.startsWith('{') || text.startsWith('[')) return parseRoster(text);
+  try {
+    const json = zlib.gunzipSync(Buffer.from(text, 'base64')).toString('utf8');
+    return parseRoster(json);
+  } catch (err) {
+    return null;
+  }
+}
+
 function readRosterFile() {
   try {
     const stats = fs.statSync(ROSTER_FILE);
@@ -109,7 +132,7 @@ function loadRoster() {
 
   const fromEnv = String(process.env.STUDENT_ROSTER_JSON || '').trim();
   if (fromEnv) {
-    const entries = parseRoster(fromEnv);
+    const entries = decodeRosterPayload(fromEnv);
     if (entries) {
       cache = { entries, source: 'env', path: null };
       return cache;
@@ -178,6 +201,7 @@ module.exports = {
   resetCache,
   // exported for unit tests
   parseRoster,
+  decodeRosterPayload,
   PIN_PATTERN,
   STUDENT_ID_PATTERN
 };

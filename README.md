@@ -3,8 +3,8 @@
 Dual-view speaking-assessment workbench for university ESL research.
 
 * **Student Mode (default, `http://localhost:3000`):** one focused column — a
-  three-tier **Practice Library** picker (medium → category/era → sentence) over
-  six A2 scenario collections, famous movie lines and song lyrics, six
+  four-step **Practice Library** picker (Movies/Songs → generation window →
+  category/era → sentence) over the movie lines, song lyrics and six
   **generational cohorts** plus an *All Generations* pool and a shuffle option
   (**276 targets**), the **scripted target card** (“Target Sentence to Read
   Aloud” with a “Listen to Model”
@@ -23,8 +23,30 @@ Dual-view speaking-assessment workbench for university ESL research.
 Public lab UI  ──►  Node/Express proxy (keys stay server-side)
                      ├── POST /api/assess : WAV → Azure Pronunciation Assessment
                      ├── POST /api/chat   : transcript → DeepSeek JSON mode
-                     └── POST /api/tts    : optional Azure Neural TTS (MP3)
+                     ├── POST /api/tts    : optional Azure Neural TTS (MP3)
+                     ├── POST /api/auth/login|guest : LinguaBridge roster identity
+                     └── POST /api/interactions     : scored-turn telemetry
 ```
+
+## What's new in v1.1.0
+
+* **LinguaBridge roster sign-in.** Students keep the participant ID + 4-digit PIN
+  printed on their LinguaBridge login card (`LB-001` / `1887`); there is also a
+  one-click **Guest** tab. The header shows `AmberBeacon (LB-001)` or `Guest`
+  with **Switch / Logout**.
+* **Hybrid telemetry.** Every scored turn is POSTed to `/api/interactions`
+  (Netlify Blobs store `fluency_interactions` in production, the gitignored
+  `data/interactions.json` locally) and the whole log exports as CSV at
+  `GET /api/admin/export-csv` for a direct Google Sheets import.
+* **Generation window.** The media tabs are now **Movies** and **Songs** only,
+  filtered by a dual-range release-era slider (Boomer 1960–1979, Gen X
+  1980–1995, Millennial 1996–2010, Gen Z 2011–2025) with one-click cohort chips
+  and a **🎲 Summon Mystery Line** button.
+* **Gamified mystery reveal.** The film title / band name is hidden behind
+  `🎬 ? ? ? ? ? ? (Mystery Movie)` or `🎵 ? ? ? ? ? ? (Mystery Artist)` until the
+  learner scores **accuracy ≥ 80** (or overall ≥ 80): the card then shows
+  `🎉 Decoded!`, the title with its release year and a confetti celebration.
+  Below 80 the title stays hidden and the card asks for another take.
 
 ## Quick start
 
@@ -53,6 +75,7 @@ npm run test:unit         # offline calibration unit tests (no server, no keys)
 npm run test:security     # offline gate + rate-limit checks (boots a mock server)
 npm run test:usage        # offline per-student quota + Azure circuit-breaker checks
 npm run test:netlify      # invokes netlify/functions/api.js with Lambda events
+npm run test:auth         # offline roster auth + telemetry/CSV checks
 npm run check:vowels      # offline IPA/vowel-alignment check (no keys needed)
 npm run check:selection   # offline three-tier picker check + CDN bank parity (276)
 npm run check:live        # Azure TTS -> 16 kHz WAV -> /api/assess (verifies keys)
@@ -83,28 +106,39 @@ or Firefox browser on `localhost`/HTTPS for microphone access.
 | `DAILY_AZURE_CALL_LIMIT` | site-wide outbound Azure calls per UTC day (default `1500`, `0` = paused) |
 | `USAGE_STORE` / `USAGE_STORE_NAME` | counter storage (`memory` forces the local fallback; default Blobs) |
 | `NETLIFY_SITE_ID` / `NETLIFY_BLOBS_TOKEN` | Blobs credentials when running outside Netlify |
+| `STUDENT_ROSTER_JSON` | v1.1.0 roster as one JSON string (`{"LB-001":{"name":"AmberBeacon","pin":"1887"}}`); use this on Netlify |
+| `STUDENT_ROSTER_PATH` | optional local roster path (default `data/students.json`, gitignored) |
+| `INTERACTIONS_STORE` / `INTERACTIONS_STORE_NAME` | telemetry storage (`blobs` \| `file` \| `memory`; Blobs store `fluency_interactions`) |
+| `INTERACTIONS_FILE` | optional local JSON log path (default `data/interactions.json`, gitignored) |
+| `ADMIN_KEY` | extra key for `GET /api/admin/export-csv` (`X-Admin-Key` or `?key=`) |
 
 | `http://localhost:3000/?vowels=1` | Student Mode starting in Vowel Practice |
 
 ## Student Mode interactions
 
-* **Three-tier practice picker** (`public/js/library.js` holds the pure filter):
-  1. **Medium / Type** — segmented pills `All` · `☕ Scenarios` · `🎬 Movies` ·
-     `🎵 Songs` (default `All`).
-  2. **Category / Era** — rebuilt from the pill: Scenarios shows the six
-     situational categories; Movies, Songs and All show the demographic cohorts
-     (`All Generations (Combined)`, Boomers, Gen Jones, Gen X, Millennials,
-     Gen Z, Gen Alpha, `🎲 Shuffle / Mix Generations`) plus the classic
-     movie/song collections, so no target is orphaned. Re-clicking the active
-     pill resets this level to the tier default.
-  3. **Target sentence** — filtered by **both** the medium and the category, and
-     labelled with the medium emoji and source:
-     `🎬 [Star Wars] "May the Force be with you."`,
-     `🎵 [Queen] "We will, we will rock you."`,
-     `☕ [Cafe] "I would like a medium latte with oat milk, please."`.
-  Every sentence carries `medium: 'scenario' | 'movie' | 'song'` and every
-  category declares its medium (cohorts expose their movie/song `media` list),
-  so the filter is a single array pass — no guessing from labels.
+* **Practice picker with a generation window** (`public/js/library.js` holds the
+  pure filter):
+  1. **Medium / Type** — `🎬 Movies` (default) or `🎵 Songs`. Scenarios stay in
+     the bank for the API/assessment pipeline but are hidden in v1.1.0.
+  2. **Generation Window** — a dual-range slider over the release years present
+     in the bank (1939–2023) plus cohort chips **Boomer 1960–1979**, **Gen X
+     1980–1995**, **Millennial 1996–2010**, **Gen Z 2011–2025** (and *All eras*).
+     The readout names every cohort the window overlaps.
+  3. **Category / Era** — rebuilt from the tier; counts reflect the current
+     generation window.
+  4. **Target sentence** — medium + window + category must all match. Labels stay
+     mysterious before scoring (`🎬 [Mystery Movie] "…"`,
+     `🎵 [Mystery Artist] "…"`), so the dropdown never leaks the title.
+  **🎲 Summon Mystery Line** picks a random target inside the active media +
+  window and resets the practice card.
+  Every sentence carries `medium: 'scenario' | 'movie' | 'song'`, a `year` and
+  the hidden work/artist `title` (`source` stays the human "Title · Year"
+  string), so filters are a single array pass — no guessing from labels.
+* **Mystery reveal.** Before scoring, the model card hides the work behind
+  `🎬 ? ? ? ? ? ? (Mystery Movie)` / `🎵 ? ? ? ? ? ? (Mystery Artist)` while the
+  English line stays readable. Azure accuracy ≥ 80 (or overall ≥ 80) triggers
+  `🎉 Decoded!`, the title + release year and a confetti celebration; below 80
+  the title stays hidden and the badge suggests another attempt.
 * **Scripted scoring switch (ON by default)** drives the target card:
   * **ON → “Target Sentence to Read Aloud”** with the subtext *“Read this exact
     sentence aloud. The system will grade your pronunciation directly against
@@ -232,6 +266,68 @@ configured (the client falls back to `window.speechSynthesis`).
   of context. Unsafe or unknown values return `400`.
 * `rate` 0.85 → SSML `prosody rate="-15%"`.
 
+### `POST /api/auth/login` (v1.1.0)
+
+```jsonc
+// request
+{ "studentId": "LB-001", "pin": "1887" }          // `password` is accepted too
+// 200
+{ "ok": true, "app_version": "1.1.0", "studentId": "LB-001",
+  "pseudonym": "AmberBeacon", "role": "student" }
+```
+
+The roster comes from `STUDENT_ROSTER_JSON` (Netlify) or the gitignored
+`data/students.json` (`{ "LB-001": { "name": "AmberBeacon", "pin": "1887" } }`);
+see `data/.students.example.json`. IDs are case-insensitive and the PIN is
+compared in constant time. Errors: `400 missing_credentials`,
+`401 invalid_credentials`, `503 roster_unavailable`, `429` after 10 attempts per
+15 minutes per IP. PINs are never echoed back or present in `/api/health`.
+
+### `POST /api/auth/guest` (v1.1.0)
+
+```jsonc
+{ "ok": true, "app_version": "1.1.0", "studentId": "guest_UaAP0n",
+  "pseudonym": "Guest", "role": "guest" }
+```
+
+One-click practice identity (`guest_` + six URL-safe random characters).
+
+### `POST /api/interactions` (v1.1.0)
+
+One record per scored turn; the browser sends this automatically after
+`/api/assess` returns (fire-and-forget, never blocks the UI):
+
+```jsonc
+{ "studentId": "LB-001", "pseudonym": "AmberBeacon", "role": "student",
+  "targetId": "gen-z-1", "medium": "movie", "sentence": "I am inevitable.",
+  "overallScore": 91, "accuracyScore": 88, "fluencyScore": 82,
+  "completenessScore": 100, "revealed": true }
+```
+
+The server normalises the payload (role/media whitelist, scores clamped 0–100),
+adds `id` (`int_<timestamp>_<id>`), `timestamp` and `app_version` and stores it:
+
+| Runtime | Storage |
+| --- | --- |
+| Netlify Function | Netlify Blobs, store **`fluency_interactions`** |
+| local `npm start` | appended to the gitignored **`data/interactions.json`** |
+| tests / CI | `INTERACTIONS_STORE=memory` (RAM only) |
+
+`201 { ok: true, id, stored, record }`.
+
+### `GET /api/admin/export-csv` (v1.1.0)
+
+Streams every stored interaction as CSV for a direct Google Sheets import
+(`text/csv`, `Content-Disposition: attachment`), header:
+
+```
+id,timestamp,app_version,studentId,pseudonym,role,targetId,medium,sentence,overallScore,accuracyScore,fluencyScore,completenessScore,revealed
+```
+
+Gated by the deployment `ACCESS_CODE` and, when `ADMIN_KEY` is set, by
+`X-Admin-Key: <key>` (or `?key=`). `?format=json` returns the same rows as JSON
+for the inspector.
+
 ### `GET /api/scenarios`
 
 ```jsonc
@@ -250,7 +346,10 @@ configured (the client falls back to `window.speechSynthesis`).
                   "medium": "movie",              // scenario | movie | song
                   "ja": "ヒューストン、問題が発生しました。",
                   "category": "movies", "categoryLabel": "Famous Movie Lines",
-                  "group": "movie", "source": "Apollo 13", "focus": "…",
+                  "group": "movie", "source": "Apollo 13 · 1995",
+                  // v1.1.0 mystery metadata (hidden until accuracy >= 80)
+                  "title": "Apollo 13", "year": 1995,
+                  "focus": "…",
                   "keywords": [...], "starters": [...],
                   // per-sentence lexical vowel alignment (irregular words only)
                   "wordVowels": { "houston": [["ou", "juː"], ["o", "ə"]],
@@ -488,6 +587,19 @@ The client keeps the sentence bank resilient:
 Secrets belong in **Site settings → Environment variables** (`AZURE_SPEECH_KEY`,
 `AZURE_SPEECH_REGION`, `DEEPSEEK_API_KEY`, `ACCESS_CODE`, `USER_DAILY_CALL_LIMIT`,
 `DAILY_AZURE_CALL_LIMIT`, …). `.env` is gitignored and never deployed.
+
+**v1.1.0 roster + telemetry on Netlify.** `data/students.json` is gitignored, so
+paste the same JSON into a `STUDENT_ROSTER_JSON` environment variable (one line,
+no newlines) or participant sign-in answers `503 roster_unavailable` and only the
+Guest tab works. Scored turns land in the Blobs store `fluency_interactions`;
+`GET /api/admin/export-csv` (with `ADMIN_KEY` set as `X-Admin-Key`) downloads the
+class CSV, or read `?format=json` from the inspector. Verified with:
+
+```bash
+npx netlify env:set STUDENT_ROSTER_JSON "$(tr -d '\n' < data/students.json)"
+curl -X POST https://<site>/api/auth/login -H 'Content-Type: application/json' \
+     -d '{"studentId":"LB-001","pin":"1887"}'
+```
 
 Netlify platform limits that matter here:
 

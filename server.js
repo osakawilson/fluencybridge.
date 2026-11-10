@@ -6,6 +6,12 @@
  *   POST /api/tts     text          -> optional Azure Neural TTS (mp3)
  *   GET  /api/health  provider/mode status for the UI badges
  *   GET  /api/scenarios  practice sentence library shared with the client
+ *
+ *   v1.1.0 research additions
+ *   POST /api/auth/login           LB-xxx + 4-digit PIN -> participant session
+ *   POST /api/auth/guest           one-click guest practice id
+ *   POST /api/interactions         append one scored turn to the telemetry log
+ *   GET  /api/admin/export-csv     gated CSV export for Google Sheets
  */
 
 require('dotenv').config();
@@ -22,7 +28,11 @@ const { assessWithAzure, azureConfigured } = require('./src/azureAssessment');
 const { recastWithDeepSeek, deepseekConfigured, normalizePayload, checkConstraints } = require('./src/deepseek');
 const { synthesizeWithAzure, ttsConfigured, DEFAULT_VOICE, TTS_VOICES } = require('./src/azureTts');
 const { mockAssessment, templateRecast } = require('./src/mock');
+const roster = require('./src/roster');
+const interactions = require('./src/interactions');
 const usage = require('./src/usage');
+
+const { version: APP_VERSION } = require('./package.json');
 
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
@@ -54,6 +64,9 @@ const ACCESS_ATTEMPT_LIMIT = Math.max(3, Math.trunc(Number(process.env.ACCESS_AT
 const ACCESS_ATTEMPT_WINDOW_MS = 15 * 60 * 1000;
 const SECURE_COOKIES = String(process.env.SECURE_COOKIES || 'false').toLowerCase() === 'true';
 const ACCESS_COOKIE = 'fb_access';
+// v1.1.0 telemetry export key. Optional: without it the CSV route is already
+// behind the ACCESS_CODE gate (and open on an un-gated local lab).
+const ADMIN_KEY = String(process.env.ADMIN_KEY || '').trim();
 
 const liveAzure = () => azureConfigured() && !FORCE_MOCK;
 const liveDeepSeek = () => deepseekConfigured() && !FORCE_MOCK;
@@ -204,6 +217,15 @@ const chatLimiter = apiLimiter('chat', RATE_LIMIT_MAX);
 const ttsLimiter = apiLimiter('TTS', RATE_LIMIT_TTS_MAX);
 // Harder throttle for passcode attempts (15 min window).
 const accessLimiter = apiLimiter('access code', ACCESS_ATTEMPT_LIMIT, ACCESS_ATTEMPT_WINDOW_MS);
+// Participant PIN attempts get the same treatment: 4 digits must not be
+// brute-forceable from a shared classroom IP.
+const authLimiter = apiLimiter('participant login', ACCESS_ATTEMPT_LIMIT, ACCESS_ATTEMPT_WINDOW_MS);
+// Guest sign-in is one click and must stay usable for a whole classroom behind
+// one campus NAT, so it is throttled like ordinary traffic, not like a PIN try.
+const guestLimiter = apiLimiter('guest login', Math.max(30, RATE_LIMIT_MAX));
+// Telemetry writes are cheap (one Blob/file append per scored turn), so this is
+// generous: it only exists to stop a script from flooding the research log.
+const interactionsLimiter = apiLimiter('interaction', Math.max(60, RATE_LIMIT_MAX * 4));
 
 /* --------------------------- daily usage quotas -------------------------- *
  * USER_DAILY_CALL_LIMIT  per student (x-client-session-id UUID) across
@@ -289,6 +311,7 @@ async function chargeAzureBudget(res) {
 app.get('/api/health', async (req, res) => {
   const payload = {
     ok: true,
+    app_version: APP_VERSION,
     server_time: new Date().toISOString(),
     node: process.version,
     providers: {
@@ -314,6 +337,21 @@ app.get('/api/health', async (req, res) => {
     },
     limits: { max_audio_mb: MAX_AUDIO_MB, min_audio_ms: MIN_AUDIO_MS, max_recording_ms: 30000 },
     force_mock: FORCE_MOCK,
+    // v1.1.0: LinguaBridge roster posture (never the PINs themselves).
+    auth: {
+      ...roster.rosterInfo(),
+      guest_enabled: true,
+      endpoints: ['POST /api/auth/login', 'POST /api/auth/guest']
+    },
+    // v1.1.0: where scored turns are stored, so a researcher can verify the
+    // deployment is writing to Blobs (Netlify) and not to a Lambda's /tmp.
+    telemetry: {
+      interactions_store: interactions.storageMode(),
+      store_name: interactions.STORE_NAME,
+      export_endpoint: 'GET /api/admin/export-csv',
+      export_requires_admin_key: ADMIN_KEY.length > 0,
+      app_version: APP_VERSION
+    },
     // Deployment posture (no secrets): lets the UI show the passcode gate and
     // lets a researcher confirm the limits the server is running with.
     security: {
@@ -394,8 +432,138 @@ app.delete('/api/session', (req, res) => {
   });
 });
 
+/* ------------------------ /auth (LinguaBridge roster) -------------------- *
+ * Students sign in with the participant ID + 4-digit PIN printed on their
+ * LinguaBridge login cards. Both routes are public (like /api/session): the
+ * access-code gate is a separate deployment gate, and a participant must be
+ * able to identify themselves before any practice call is made.
+ * ------------------------------------------------------------------------ */
+
+app.post('/api/auth/login', authLimiter, (req, res) => {
+  const body = req.body || {};
+  const studentId = String(body.studentId || body.participantId || '').trim();
+  const pin = String(body.pin !== undefined ? body.pin : (body.password || '')).trim();
+
+  if (!studentId || !pin) {
+    return res.status(400).json({
+      error: 'missing_credentials',
+      message: 'Both the participant ID (e.g. LB-001) and the 4-digit PIN are required.'
+    });
+  }
+
+  const info = roster.rosterInfo();
+  if (!info.configured) {
+    log('participant login refused: roster not configured');
+    return res.status(503).json({
+      error: 'roster_unavailable',
+      message: 'The participant roster is not loaded on this server. Add data/students.json or set STUDENT_ROSTER_JSON.',
+      roster_configured: false
+    });
+  }
+
+  const student = roster.verifyStudent(studentId, pin);
+  if (!student) {
+    log(`participant login rejected: ${studentId} from ${req.ip}`);
+    return res.status(401).json({
+      error: 'invalid_credentials',
+      message: 'That participant ID and PIN combination is not in the LinguaBridge roster.'
+    });
+  }
+
+  log(`participant login: ${student.studentId} (${student.pseudonym}) from ${req.ip}`);
+  return res.json({
+    ok: true,
+    app_version: APP_VERSION,
+    studentId: student.studentId,
+    pseudonym: student.pseudonym,
+    role: 'student'
+  });
+});
+
+/** nanoid-style 6-character URL-safe id (crypto-random, no dependency). */
+const GUEST_ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+
+function guestId(size = 6) {
+  let out = '';
+  for (let i = 0; i < size; i += 1) out += GUEST_ALPHABET[crypto.randomInt(GUEST_ALPHABET.length)];
+  return `guest_${out}`;
+}
+
+app.post('/api/auth/guest', guestLimiter, (req, res) => {
+  const studentId = guestId(6);
+  log(`guest practice session: ${studentId} from ${req.ip}`);
+  return res.json({
+    ok: true,
+    app_version: APP_VERSION,
+    studentId,
+    pseudonym: 'Guest',
+    role: 'guest'
+  });
+});
+
+
 /* Everything registered below this line is gated when ACCESS_CODE is set. */
 app.use('/api', requireAccessCode);
+
+/* ------------------------- v1.1.0 interaction log ------------------------ *
+ * POST /api/interactions  one record per scored turn (Blobs on Netlify, the
+ *                         gitignored data/interactions.json locally).
+ * GET  /api/admin/export-csv  the whole log as CSV for Google Sheets. Gated by
+ *                         the ACCESS_CODE (above) and, when configured, by
+ *                         ADMIN_KEY via `X-Admin-Key` or `?key=`.
+ * ------------------------------------------------------------------------ */
+
+/** Optional second gate for the research export. */
+function requireAdminKey(req, res, next) {
+  if (!ADMIN_KEY) return next();
+  const provided = String(req.get('x-admin-key') || req.query.key || '').trim();
+  if (provided && safeEqual(provided, ADMIN_KEY)) return next();
+  log(`admin export rejected from ${req.ip}`);
+  return res.status(401).json({
+    error: 'admin_key_required',
+    message: 'Send the export key as the X-Admin-Key header (or ?key=).'
+  });
+}
+
+app.post('/api/interactions', interactionsLimiter, async (req, res, next) => {
+  try {
+    const entry = await interactions.record(req.body || {});
+    log(`interaction ${entry.id} ${entry.studentId} ${entry.targetId} `
+      + `acc=${entry.accuracyScore} overall=${entry.overallScore} revealed=${entry.revealed}`);
+    return res.status(201).json({
+      ok: true,
+      id: entry.id,
+      stored: interactions.storageMode(),
+      record: entry
+    });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+app.get('/api/admin/export-csv', requireAdminKey, async (req, res, next) => {
+  try {
+    const records = await interactions.list();
+    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('X-Interaction-Count', String(records.length));
+    // `?format=json` is the same data for the inspector / tests.
+    if (String(req.query.format || '').toLowerCase() === 'json') {
+      return res.json({
+        ok: true,
+        app_version: APP_VERSION,
+        count: records.length,
+        stored: interactions.storageMode(),
+        interactions: records
+      });
+    }
+    const stamp = new Date().toISOString().slice(0, 10);
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="fluencybridge-interactions-${stamp}.csv"`);
+    return res.send(interactions.toCsv(records));
+  } catch (err) {
+    return next(err);
+  }
+});
 
 app.get('/api/scenarios', (req, res) => {
   res.json({
@@ -722,6 +890,8 @@ function startServer(port = PORT) {
     console.log(`  Access code gate               : ${accessCodeRequired() ? 'ON (X-Access-Code / session cookie)' : 'off (set ACCESS_CODE to require a passcode)'}`);
     console.log(`  Rate limit / IP                : assess ${RATE_LIMIT_MAX}, chat ${RATE_LIMIT_MAX}, tts ${RATE_LIMIT_TTS_MAX} per ${Math.round(RATE_LIMIT_WINDOW_MS / 1000)}s`);
     console.log(`  Daily quota                    : ${usage.USER_DAILY_CALL_LIMIT}/student · ${usage.DAILY_AZURE_CALL_LIMIT} Azure calls site-wide (${usage.storageMode()} store)`);
+    console.log(`  Participant roster             : ${roster.rosterSize()} student(s) from ${roster.rosterInfo().source}`);
+    console.log(`  Interaction telemetry          : ${interactions.storageMode()} ${interactions.storageMode() === 'file' ? `(${interactions.INTERACTIONS_FILE})` : `(store ${interactions.STORE_NAME})`}`);
     if (TRUST_PROXY) console.log(`  Trust proxy                    : ${TRUST_PROXY}`);
     if (FORCE_MOCK) console.log('  FORCE_MOCK=true -> live providers disabled on purpose');
     console.log('  Tip: copy .env.example to .env and add keys for live data.');

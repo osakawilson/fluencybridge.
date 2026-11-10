@@ -1,8 +1,8 @@
 {
   "name": "fluencybridge-inspector",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
-  "description": "FluencyBridge Inspector - AI-mediated speaking assessment + CEFR A2 roleplay research PoC (Azure Pronunciation Assessment, DeepSeek Flash JSON recast, browser/Azure Neural TTS).",
+  "description": "FluencyBridge Inspector - AI-mediated speaking assessment + CEFR A2 roleplay research PoC (Azure Pronunciation Assessment, DeepSeek Flash JSON recast, browser/Azure Neural TTS, LinguaBridge roster auth + interaction telemetry).",
   "main": "server.js",
   "scripts": {
     "build": "node scripts/build-scenarios.mjs",
@@ -11,11 +11,12 @@
     "predev": "npm run build",
     "dev": "node --watch server.js",
     "pretest": "npm run build",
-    "test": "npm run test:unit && npm run test:security && npm run test:usage && npm run test:netlify && node scripts/smoke-test.js",
+    "test": "npm run test:unit && npm run test:security && npm run test:usage && npm run test:netlify && npm run test:auth && node scripts/smoke-test.js",
     "test:unit": "node scripts/scoring-check.mjs",
     "test:security": "node scripts/security-check.mjs",
     "test:usage": "node scripts/usage-check.mjs",
     "test:netlify": "node scripts/netlify-check.mjs",
+    "test:auth": "node scripts/auth-telemetry-check.mjs",
     "check:vowels": "node scripts/vowel-check.mjs",
     "check:selection": "node scripts/selection-check.mjs",
     "check:live": "node scripts/live-check.js"

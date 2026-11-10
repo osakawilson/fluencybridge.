@@ -17,6 +17,7 @@ import { fileURLToPath } from 'node:url';
 // server.js reads its configuration at require time, so set the test env first.
 process.env.FORCE_MOCK = 'true';
 process.env.USAGE_STORE = 'memory';
+process.env.INTERACTIONS_STORE = 'memory';
 process.env.ACCESS_CODE = 'netlify-check-code';
 
 const require = createRequire(import.meta.url);
@@ -175,6 +176,51 @@ check('POST /api/chat through the function returns a recast',
 check('the per-student quota header is returned',
   Number(chat.header('x-student-daily-remaining')) === 59,
   String(chat.header('x-student-daily-remaining')));
+
+/* v1.1.0: the participant + telemetry endpoints must work through the wrapper. */
+const guest = await invoke(handler, event({
+  method: 'POST',
+  pathname: '/api/auth/guest',
+  headers: { 'content-type': 'application/json', 'x-access-code': 'netlify-check-code' },
+  body: '{}'
+}));
+check('POST /api/auth/guest through the function issues a guest id',
+  guest.statusCode === 200 && /^guest_[A-Za-z0-9]{6}$/.test(guest.data.studentId),
+  `${guest.statusCode} ${guest.data && guest.data.studentId}`);
+
+const interaction = await invoke(handler, event({
+  method: 'POST',
+  pathname: '/api/interactions',
+  headers: { 'content-type': 'application/json', 'x-access-code': 'netlify-check-code' },
+  body: JSON.stringify({
+    studentId: guest.data.studentId,
+    pseudonym: 'Guest',
+    role: 'guest',
+    targetId: 'gen-z-1',
+    medium: 'movie',
+    sentence: 'I am inevitable.',
+    overallScore: 84,
+    accuracyScore: 82,
+    fluencyScore: 80,
+    completenessScore: 100,
+    revealed: true
+  })
+}));
+check('POST /api/interactions through the function stores a record',
+  interaction.statusCode === 201 && interaction.data.ok === true
+    && interaction.data.record.app_version === '1.1.0'
+    && interaction.data.record.id.startsWith('int_'),
+  `${interaction.statusCode} ${interaction.data && interaction.data.id}`);
+
+const exportCsv = await invoke(handler, event({
+  pathname: '/api/admin/export-csv',
+  headers: { 'x-access-code': 'netlify-check-code' }
+}));
+check('GET /api/admin/export-csv through the function returns CSV',
+  exportCsv.statusCode === 200
+    && String(exportCsv.body).startsWith('id,timestamp,app_version,studentId')
+    && String(exportCsv.body).includes(interaction.data.id),
+  `${exportCsv.statusCode} · ${exportCsv.header('content-type')}`);
 
 console.log(failures ? `\n${failures} Netlify check(s) failed.` : '\nAll Netlify packaging checks passed.');
 process.exitCode = failures ? 1 : 0;

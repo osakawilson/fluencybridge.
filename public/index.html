@@ -27,9 +27,14 @@
         <span class="brand-divider">|</span>
         <span class="brand-sub">Research Inspector PoC</span>
       </div>
-      <span class="tag tag-poc">PoC v1.0</span>
+      <span class="tag tag-poc">v1.1.0</span>
     </div>
     <div class="nav-right">
+      <div class="user-badge hidden" id="userBadge">
+        <span class="user-avatar" aria-hidden="true">👤</span>
+        <span class="user-name mono" id="userBadgeName">Guest</span>
+        <button class="user-switch" id="logoutBtn" type="button" title="Switch participant or practise as a guest">Switch / Logout</button>
+      </div>
       <div class="mode-switch" role="group" aria-label="View mode">
         <button class="mode-btn is-active" type="button" data-mode="student" aria-pressed="true" title="Focused pronunciation practice">Student</button>
         <button class="mode-btn" type="button" data-mode="inspector" aria-pressed="false" title="Full researcher inspector (?mode=inspector)">Inspector</button>
@@ -78,34 +83,63 @@
           <span class="mini-badge" id="practiceMeta">—</span>
         </div>
 
-        <!-- Level 1: medium / type -->
+        <!-- Level 1: medium / type (v1.1.0: movies + songs only) -->
         <div class="field">
           <span class="field-label"><span class="tier-step">1</span> Medium / Type</span>
           <div class="segmented" id="mediumPills" role="group" aria-label="Medium / type filter">
-            <button class="seg-btn is-active" type="button" data-medium="all" aria-pressed="true">All</button>
-            <button class="seg-btn" type="button" data-medium="scenario" aria-pressed="false">☕ Scenarios</button>
-            <button class="seg-btn" type="button" data-medium="movie" aria-pressed="false">🎬 Movies</button>
+            <button class="seg-btn is-active" type="button" data-medium="movie" aria-pressed="true">🎬 Movies</button>
             <button class="seg-btn" type="button" data-medium="song" aria-pressed="false">🎵 Songs</button>
           </div>
         </div>
 
-        <!-- Level 2: category / era (filtered by the tier above) -->
+        <!-- Level 2: dual-range generation window (release era / cohort) -->
+        <div class="field generation-field">
+          <span class="field-label"><span class="tier-step">2</span> Generation Window</span>
+          <div class="range-dual" id="yearTrack">
+            <div class="range-track" aria-hidden="true"></div>
+            <input type="range" id="yearMin" min="1939" max="2025" step="1" value="1939"
+                   aria-label="Earliest release year" />
+            <input type="range" id="yearMax" min="1939" max="2025" step="1" value="2025"
+                   aria-label="Latest release year" />
+          </div>
+          <div class="range-scale" aria-hidden="true">
+            <span>1939</span><span>1960</span><span>1980</span><span>1996</span><span>2011</span><span>2025</span>
+          </div>
+          <div class="generation-chips" id="yearChips" role="group" aria-label="Generation presets">
+            <button class="gen-chip is-active" type="button" data-from="1939" data-to="2025">All eras</button>
+            <button class="gen-chip" type="button" data-from="1960" data-to="1979">🎸 Boomer</button>
+            <button class="gen-chip" type="button" data-from="1980" data-to="1995">📼 Gen X</button>
+            <button class="gen-chip" type="button" data-from="1996" data-to="2010">💿 Millennial</button>
+            <button class="gen-chip" type="button" data-from="2011" data-to="2025">📱 Gen Z</button>
+          </div>
+          <p class="range-readout mono" id="yearWindowLabel" aria-live="polite">1939–2025 · All eras</p>
+        </div>
+
+        <!-- Level 3: category / era (filtered by the tier above) -->
         <div class="field">
-          <label for="categorySelect"><span class="tier-step">2</span> Category / Era</label>
+          <label for="categorySelect"><span class="tier-step">3</span> Category / Era</label>
           <div class="select-wrap">
             <select id="categorySelect"></select>
             <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
           </div>
         </div>
 
-        <!-- Level 3: target sentence (filtered by tier + category) -->
+        <!-- Level 4: target sentence (filtered by tier + window + category) -->
         <div class="field">
-          <label for="sentenceSelect"><span class="tier-step">3</span> Target sentence</label>
+          <label for="sentenceSelect"><span class="tier-step">4</span> Target sentence</label>
           <div class="select-wrap">
             <select id="sentenceSelect" aria-describedby="scenarioGoal"></select>
             <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
           </div>
         </div>
+
+        <button class="summon-btn" id="summonBtn" type="button" title="Pick a random mystery line inside the current media + generation window">
+          <span class="summon-emoji" aria-hidden="true">🎲</span>
+          <span class="summon-copy">
+            <strong>Summon Mystery Line</strong>
+            <small>Random line from the selected media &amp; era — title stays hidden until you score 80+</small>
+          </span>
+        </button>
 
         <p class="scenario-goal" id="scenarioGoal"></p>
         <label class="switch-row" for="scriptedToggle" title="Scripted mode scores the recording against the target sentence (Azure miscue + completeness).">
@@ -128,6 +162,10 @@
             <span id="modelCardTitle">Target Sentence to Read Aloud</span>
           </h2>
           <span class="mini-badge" id="modelSentenceHint">scripted target</span>
+        </div>
+        <div class="mystery-row">
+          <span class="mystery-badge" id="mysteryBadge">🎬 ? ? ? ? ? ? (Mystery Movie)</span>
+          <span class="mystery-reveal hidden" id="mysteryReveal"></span>
         </div>
         <p class="card-sub" id="modelCardHint">Read this exact sentence aloud. The system will grade your pronunciation directly against it.</p>
         <p class="model-sentence" id="modelSentenceText">—</p>
@@ -157,6 +195,7 @@
           </label>
         </div>
         <p class="vowel-hint hidden" id="vowelHint">Tap a highlighted vowel to hear that word’s vowel sound (true IPA, not a spelling guess).</p>
+        <div class="reveal-burst" id="revealBurst" aria-hidden="true"></div>
       </div>
 
       <div class="card mic-card">
@@ -300,6 +339,40 @@
       <button class="access-gate-btn" id="accessGateSubmit" type="submit">Unlock</button>
       <p class="access-gate-foot">The code is verified by the server and kept in an HttpOnly session cookie.</p>
     </form>
+  </div>
+
+  <!-- v1.1.0 participant login: LinguaBridge roster + one-click guest mode -->
+  <div class="access-gate login-gate hidden" id="loginGate" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <div class="access-gate-card login-card">
+      <div class="access-gate-icon" aria-hidden="true">🎓</div>
+      <h2 class="access-gate-title" id="loginTitle">Sign in to FluencyBridge</h2>
+      <p class="access-gate-sub">Use the participant ID and 4-digit PIN from your LinguaBridge login card, or practise as a guest.</p>
+
+      <div class="login-tabs" role="tablist" aria-label="Sign-in method">
+        <button class="login-tab is-active" type="button" role="tab" data-login-tab="student" aria-selected="true">Participant</button>
+        <button class="login-tab" type="button" role="tab" data-login-tab="guest" aria-selected="false">Guest</button>
+      </div>
+
+      <form class="login-pane" id="loginStudentForm" autocomplete="off">
+        <label class="access-gate-label" for="loginStudentId">Participant ID (e.g., LB-001)</label>
+        <input class="access-gate-input mono" id="loginStudentId" name="studentId" type="text"
+               placeholder="LB-001" autocomplete="username" spellcheck="false" autocapitalize="characters" required />
+        <label class="access-gate-label" for="loginPin">4-Digit PIN</label>
+        <input class="access-gate-input mono" id="loginPin" name="pin" type="password"
+               placeholder="••••" inputmode="numeric" pattern="[0-9]{4}" maxlength="4"
+               autocomplete="current-password" required />
+        <p class="access-gate-error hidden" id="loginError" role="alert"></p>
+        <button class="access-gate-btn" id="loginSubmit" type="submit">Sign in</button>
+      </form>
+
+      <div class="login-pane hidden" id="loginGuestPane">
+        <p class="login-guest-copy">No login card to hand? Practise as a guest — your scores are still saved to the class research log, without a participant ID.</p>
+        <p class="access-gate-error hidden" id="loginGuestError" role="alert"></p>
+        <button class="access-gate-btn" id="loginGuestBtn" type="button">Practice as Guest</button>
+      </div>
+
+      <p class="access-gate-foot">The PIN is checked by the server against the LinguaBridge roster and never stored in this page.</p>
+    </div>
   </div>
 
   <script type="module" src="js/app.js"></script>

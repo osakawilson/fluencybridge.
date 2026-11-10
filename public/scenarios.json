@@ -593,6 +593,8 @@
       "medium": "scenario",
       "ja": "オートミルクのミディアムラテをお願いします。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "ordering, ingredients, paying",
       "keywords": [
         "latte",
@@ -654,6 +656,8 @@
       "medium": "scenario",
       "ja": "窓際の2人用の席をお願いできますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "ordering, ingredients, paying",
       "keywords": [
         "latte",
@@ -717,6 +721,8 @@
       "medium": "scenario",
       "ja": "このサンドイッチにナッツは入っていますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "ordering, ingredients, paying",
       "keywords": [
         "latte",
@@ -774,6 +780,8 @@
       "medium": "scenario",
       "ja": "メニューを見せていただけますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "ordering, ingredients, paying",
       "keywords": [
         "latte",
@@ -814,6 +822,8 @@
       "medium": "scenario",
       "ja": "チキンスープとお水を一杯ください。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "ordering, ingredients, paying",
       "keywords": [
         "latte",
@@ -873,6 +883,8 @@
       "medium": "scenario",
       "ja": "このコーヒーは砂糖なしでお願いできますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "ordering, ingredients, paying",
       "keywords": [
         "latte",
@@ -934,6 +946,8 @@
       "medium": "scenario",
       "ja": "チョコレートケーキはいくらですか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "ordering, ingredients, paying",
       "keywords": [
         "latte",
@@ -985,6 +999,8 @@
       "medium": "scenario",
       "ja": "お会計をお願いできますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "ordering, ingredients, paying",
       "keywords": [
         "latte",
@@ -1032,6 +1048,8 @@
       "medium": "scenario",
       "ja": "ベジタリアン向けの料理はありますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "ordering, ingredients, paying",
       "keywords": [
         "latte",
@@ -1099,6 +1117,8 @@
       "medium": "scenario",
       "ja": "カードで払えますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "ordering, ingredients, paying",
       "keywords": [
         "latte",
@@ -1139,6 +1159,8 @@
       "medium": "scenario",
       "ja": "ステーキはウェルダンでお願いします。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "ordering, ingredients, paying",
       "keywords": [
         "latte",
@@ -1192,6 +1214,8 @@
       "medium": "scenario",
       "ja": "このスープは温かいですか、冷たいですか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "ordering, ingredients, paying",
       "keywords": [
         "latte",
@@ -1239,6 +1263,8 @@
       "medium": "scenario",
       "ja": "牛乳アレルギーなので、チーズは入れないでください。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "ordering, ingredients, paying",
       "keywords": [
         "latte",
@@ -1290,6 +1316,8 @@
       "medium": "scenario",
       "ja": "パンをもう少しもらえますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "ordering, ingredients, paying",
       "keywords": [
         "latte",
@@ -1349,6 +1377,8 @@
       "medium": "scenario",
       "ja": "手荷物受取所はどこですか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "directions, baggage, boarding",
       "keywords": [
         "baggage claim",
@@ -1403,6 +1433,8 @@
       "medium": "scenario",
       "ja": "CA982便でスーツケースが届きませんでした。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "directions, baggage, boarding",
       "keywords": [
         "baggage claim",
@@ -1461,6 +1493,8 @@
       "medium": "scenario",
       "ja": "205便は何番ゲートから出発しますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "directions, baggage, boarding",
       "keywords": [
         "baggage claim",
@@ -1498,6 +1532,8 @@
       "medium": "scenario",
       "ja": "搭乗開始は何時ですか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "directions, baggage, boarding",
       "keywords": [
         "baggage claim",
@@ -1542,6 +1578,8 @@
       "medium": "scenario",
       "ja": "これは保安検査の列ですか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "directions, baggage, boarding",
       "keywords": [
         "baggage claim",
@@ -1590,6 +1628,8 @@
       "medium": "scenario",
       "ja": "窓側の席をお願いします。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "directions, baggage, boarding",
       "keywords": [
         "baggage claim",
@@ -1638,6 +1678,8 @@
       "medium": "scenario",
       "ja": "遅れはどのくらいですか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "directions, baggage, boarding",
       "keywords": [
         "baggage claim",
@@ -1682,6 +1724,8 @@
       "medium": "scenario",
       "ja": "乗り継ぎ便の搭乗券をもらえますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "directions, baggage, boarding",
       "keywords": [
         "baggage claim",
@@ -1726,6 +1770,8 @@
       "medium": "scenario",
       "ja": "パスポートはハンドバッグの中です。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "directions, baggage, boarding",
       "keywords": [
         "baggage claim",
@@ -1763,6 +1809,8 @@
       "medium": "scenario",
       "ja": "市内中心部へ行くタクシーはどこで乗れますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "directions, baggage, boarding",
       "keywords": [
         "baggage claim",
@@ -1827,6 +1875,8 @@
       "medium": "scenario",
       "ja": "手荷物を預ける必要はありますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "directions, baggage, boarding",
       "keywords": [
         "baggage claim",
@@ -1875,6 +1925,8 @@
       "medium": "scenario",
       "ja": "ターミナル行きのシャトルバスはありますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "directions, baggage, boarding",
       "keywords": [
         "baggage claim",
@@ -1939,6 +1991,8 @@
       "medium": "scenario",
       "ja": "喉が痛いので診察の予約をお願いします。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "symptoms, pharmacy, medicine",
       "keywords": [
         "appointment",
@@ -2003,6 +2057,8 @@
       "medium": "scenario",
       "ja": "昨日から頭痛と熱があります。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "symptoms, pharmacy, medicine",
       "keywords": [
         "appointment",
@@ -2083,6 +2139,8 @@
       "medium": "scenario",
       "ja": "今日の午後に診てもらえますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "symptoms, pharmacy, medicine",
       "keywords": [
         "appointment",
@@ -2120,6 +2178,8 @@
       "medium": "scenario",
       "ja": "咳止めの薬がほしいです。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "symptoms, pharmacy, medicine",
       "keywords": [
         "appointment",
@@ -2180,6 +2240,8 @@
       "medium": "scenario",
       "ja": "座ると背中が痛いです。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "symptoms, pharmacy, medicine",
       "keywords": [
         "appointment",
@@ -2224,6 +2286,8 @@
       "medium": "scenario",
       "ja": "ペニシリンにアレルギーがあります。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "symptoms, pharmacy, medicine",
       "keywords": [
         "appointment",
@@ -2272,6 +2336,8 @@
       "medium": "scenario",
       "ja": "この薬はどのくらいの頻度で飲めばいいですか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "symptoms, pharmacy, medicine",
       "keywords": [
         "appointment",
@@ -2320,6 +2386,8 @@
       "medium": "scenario",
       "ja": "この薬は処方箋が必要ですか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "symptoms, pharmacy, medicine",
       "keywords": [
         "appointment",
@@ -2368,6 +2436,8 @@
       "medium": "scenario",
       "ja": "めまいがして眠れません。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "symptoms, pharmacy, medicine",
       "keywords": [
         "appointment",
@@ -2405,6 +2475,8 @@
       "medium": "scenario",
       "ja": "一番近い薬局はどこですか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "symptoms, pharmacy, medicine",
       "keywords": [
         "appointment",
@@ -2459,6 +2531,8 @@
       "medium": "scenario",
       "ja": "薬代はカードで払えますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "symptoms, pharmacy, medicine",
       "keywords": [
         "appointment",
@@ -2507,6 +2581,8 @@
       "medium": "scenario",
       "ja": "3時に予約があります。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "symptoms, pharmacy, medicine",
       "keywords": [
         "appointment",
@@ -2571,6 +2647,8 @@
       "medium": "scenario",
       "ja": "このシャツのもっと大きいサイズはありますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "sizes, discounts, returns",
       "keywords": [
         "size",
@@ -2615,6 +2693,8 @@
       "medium": "scenario",
       "ja": "この靴を試着してもいいですか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "sizes, discounts, returns",
       "keywords": [
         "size",
@@ -2659,6 +2739,8 @@
       "medium": "scenario",
       "ja": "このジャケットはいくらですか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "sizes, discounts, returns",
       "keywords": [
         "size",
@@ -2696,6 +2778,8 @@
       "medium": "scenario",
       "ja": "このバッグは割引になりますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "sizes, discounts, returns",
       "keywords": [
         "size",
@@ -2740,6 +2824,8 @@
       "medium": "scenario",
       "ja": "今日は何時に閉店しますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "sizes, discounts, returns",
       "keywords": [
         "size",
@@ -2777,6 +2863,8 @@
       "medium": "scenario",
       "ja": "青いセーターを探しています。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "sizes, discounts, returns",
       "keywords": [
         "size",
@@ -2827,6 +2915,8 @@
       "medium": "scenario",
       "ja": "サイズが合わなければ返品できますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "sizes, discounts, returns",
       "keywords": [
         "size",
@@ -2875,6 +2965,8 @@
       "medium": "scenario",
       "ja": "クレジットカードは使えますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "sizes, discounts, returns",
       "keywords": [
         "size",
@@ -2912,6 +3004,8 @@
       "medium": "scenario",
       "ja": "このドレスは私には小さすぎます。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "sizes, discounts, returns",
       "keywords": [
         "size",
@@ -2956,6 +3050,8 @@
       "medium": "scenario",
       "ja": "試着室はどこですか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "sizes, discounts, returns",
       "keywords": [
         "size",
@@ -3000,6 +3096,8 @@
       "medium": "scenario",
       "ja": "同じバッグの黒色はありますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "sizes, discounts, returns",
       "keywords": [
         "size",
@@ -3044,6 +3142,8 @@
       "medium": "scenario",
       "ja": "レシートをいただけますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "sizes, discounts, returns",
       "keywords": [
         "size",
@@ -3088,6 +3188,8 @@
       "medium": "scenario",
       "ja": "2泊で予約しています。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "check-in, wifi, room service",
       "keywords": [
         "reservation",
@@ -3147,6 +3249,8 @@
       "medium": "scenario",
       "ja": "Wi-Fiのパスワードは何ですか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "check-in, wifi, room service",
       "keywords": [
         "reservation",
@@ -3194,6 +3298,8 @@
       "medium": "scenario",
       "ja": "部屋で朝食を食べられますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "check-in, wifi, room service",
       "keywords": [
         "reservation",
@@ -3247,6 +3353,8 @@
       "medium": "scenario",
       "ja": "チェックアウトは何時ですか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "check-in, wifi, room service",
       "keywords": [
         "reservation",
@@ -3283,6 +3391,8 @@
       "medium": "scenario",
       "ja": "5階へ行くエレベーターはありますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "check-in, wifi, room service",
       "keywords": [
         "reservation",
@@ -3332,6 +3442,8 @@
       "medium": "scenario",
       "ja": "タオルをもう一枚もらえますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "check-in, wifi, room service",
       "keywords": [
         "reservation",
@@ -3385,6 +3497,8 @@
       "medium": "scenario",
       "ja": "部屋にコーヒーメーカーはありますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "check-in, wifi, room service",
       "keywords": [
         "reservation",
@@ -3448,6 +3562,8 @@
       "medium": "scenario",
       "ja": "正午まで荷物を預かってもらえますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "check-in, wifi, room service",
       "keywords": [
         "reservation",
@@ -3501,6 +3617,8 @@
       "medium": "scenario",
       "ja": "ダブルルームを予約したいです。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "check-in, wifi, room service",
       "keywords": [
         "reservation",
@@ -3554,6 +3672,8 @@
       "medium": "scenario",
       "ja": "空港シャトルは無料ですか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "check-in, wifi, room service",
       "keywords": [
         "reservation",
@@ -3601,6 +3721,8 @@
       "medium": "scenario",
       "ja": "部屋のエアコンが動きません。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "check-in, wifi, room service",
       "keywords": [
         "reservation",
@@ -3637,6 +3759,8 @@
       "medium": "scenario",
       "ja": "明日の朝に支払えますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "check-in, wifi, room service",
       "keywords": [
         "reservation",
@@ -3684,6 +3808,8 @@
       "medium": "scenario",
       "ja": "大阪までの往復切符をお願いします。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "tickets, transfers, platforms",
       "keywords": [
         "ticket",
@@ -3741,6 +3867,8 @@
       "medium": "scenario",
       "ja": "電車は何番線から出ますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "tickets, transfers, platforms",
       "keywords": [
         "ticket",
@@ -3777,6 +3905,8 @@
       "medium": "scenario",
       "ja": "次の駅で乗り換えが必要ですか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "tickets, transfers, platforms",
       "keywords": [
         "ticket",
@@ -3824,6 +3954,8 @@
       "medium": "scenario",
       "ja": "終電は何時ですか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "tickets, transfers, platforms",
       "keywords": [
         "ticket",
@@ -3860,6 +3992,8 @@
       "medium": "scenario",
       "ja": "この席は空いていますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "tickets, transfers, platforms",
       "keywords": [
         "ticket",
@@ -3907,6 +4041,8 @@
       "medium": "scenario",
       "ja": "電車の中で切符を買えますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "tickets, transfers, platforms",
       "keywords": [
         "ticket",
@@ -3950,6 +4086,8 @@
       "medium": "scenario",
       "ja": "所要時間はどのくらいですか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "tickets, transfers, platforms",
       "keywords": [
         "ticket",
@@ -4003,6 +4141,8 @@
       "medium": "scenario",
       "ja": "この電車はセントラル駅に止まりますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "tickets, transfers, platforms",
       "keywords": [
         "ticket",
@@ -4050,6 +4190,8 @@
       "medium": "scenario",
       "ja": "乗り継ぎに遅れました。どうすればいいですか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "tickets, transfers, platforms",
       "keywords": [
         "ticket",
@@ -4086,6 +4228,8 @@
       "medium": "scenario",
       "ja": "時刻表はどこにありますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "tickets, transfers, platforms",
       "keywords": [
         "ticket",
@@ -4139,6 +4283,8 @@
       "medium": "scenario",
       "ja": "学生割引はありますか。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "tickets, transfers, platforms",
       "keywords": [
         "ticket",
@@ -4192,6 +4338,8 @@
       "medium": "scenario",
       "ja": "空港に着いたら教えてください。",
       "source": null,
+      "title": null,
+      "year": null,
       "focus": "tickets, transfers, platforms",
       "keywords": [
         "ticket",
@@ -4238,7 +4386,9 @@
       "sampleUtterance": "May the Force be with you.",
       "medium": "movie",
       "ja": "フォースが共にあらんことを。",
-      "source": "Star Wars",
+      "source": "Star Wars · 1977",
+      "title": "Star Wars",
+      "year": 1977,
       "focus": "rhythm, stress, linking",
       "keywords": [
         "force",
@@ -4274,7 +4424,9 @@
       "sampleUtterance": "There's no place like home.",
       "medium": "movie",
       "ja": "我が家に勝る場所はない。",
-      "source": "The Wizard of Oz",
+      "source": "The Wizard of Oz · 1939",
+      "title": "The Wizard of Oz",
+      "year": 1939,
       "focus": "rhythm, stress, linking",
       "keywords": [
         "force",
@@ -4317,7 +4469,9 @@
       "sampleUtterance": "Houston, we have a problem.",
       "medium": "movie",
       "ja": "ヒューストン、問題が発生しました。",
-      "source": "Apollo 13",
+      "source": "Apollo 13 · 1995",
+      "title": "Apollo 13",
+      "year": 1995,
       "focus": "rhythm, stress, linking",
       "keywords": [
         "force",
@@ -4370,7 +4524,9 @@
       "sampleUtterance": "I'll be back.",
       "medium": "movie",
       "ja": "また戻ってくる。",
-      "source": "The Terminator",
+      "source": "The Terminator · 1984",
+      "title": "The Terminator",
+      "year": 1984,
       "focus": "rhythm, stress, linking",
       "keywords": [
         "force",
@@ -4413,7 +4569,9 @@
       "sampleUtterance": "Here's looking at you, kid.",
       "medium": "movie",
       "ja": "君に乾杯。",
-      "source": "Casablanca",
+      "source": "Casablanca · 1942",
+      "title": "Casablanca",
+      "year": 1942,
       "focus": "rhythm, stress, linking",
       "keywords": [
         "force",
@@ -4462,7 +4620,9 @@
       "sampleUtterance": "You're gonna need a bigger boat.",
       "medium": "movie",
       "ja": "もっと大きい船が必要だ。",
-      "source": "Jaws",
+      "source": "Jaws · 1975",
+      "title": "Jaws",
+      "year": 1975,
       "focus": "rhythm, stress, linking",
       "keywords": [
         "force",
@@ -4515,7 +4675,9 @@
       "sampleUtterance": "Life is like a box of chocolates.",
       "medium": "movie",
       "ja": "人生はチョコレートの箱のようなものだ。",
-      "source": "Forrest Gump",
+      "source": "Forrest Gump · 1994",
+      "title": "Forrest Gump",
+      "year": 1994,
       "focus": "rhythm, stress, linking",
       "keywords": [
         "force",
@@ -4562,7 +4724,9 @@
       "sampleUtterance": "To infinity and beyond!",
       "medium": "movie",
       "ja": "無限の彼方へ、さあ行くぞ！",
-      "source": "Toy Story",
+      "source": "Toy Story · 1995",
+      "title": "Toy Story",
+      "year": 1995,
       "focus": "rhythm, stress, linking",
       "keywords": [
         "force",
@@ -4609,7 +4773,9 @@
       "sampleUtterance": "Just keep swimming.",
       "medium": "movie",
       "ja": "泳ぎ続けるんだ。",
-      "source": "Finding Nemo",
+      "source": "Finding Nemo · 2003",
+      "title": "Finding Nemo",
+      "year": 2003,
       "focus": "rhythm, stress, linking",
       "keywords": [
         "force",
@@ -4645,7 +4811,9 @@
       "sampleUtterance": "Elementary, my dear Watson.",
       "medium": "movie",
       "ja": "初歩的なことだ、ワトソン君。",
-      "source": "Sherlock Holmes",
+      "source": "Sherlock Holmes · 2009",
+      "title": "Sherlock Holmes",
+      "year": 2009,
       "focus": "rhythm, stress, linking",
       "keywords": [
         "force",
@@ -4702,7 +4870,9 @@
       "sampleUtterance": "Why so serious?",
       "medium": "movie",
       "ja": "なぜそんなに真面目なんだ？",
-      "source": "The Dark Knight",
+      "source": "The Dark Knight · 2008",
+      "title": "The Dark Knight",
+      "year": 2008,
       "focus": "rhythm, stress, linking",
       "keywords": [
         "force",
@@ -4749,7 +4919,9 @@
       "sampleUtterance": "I'll make him an offer he cannot refuse.",
       "medium": "movie",
       "ja": "彼が断れない申し出をする。",
-      "source": "The Godfather",
+      "source": "The Godfather · 1972",
+      "title": "The Godfather",
+      "year": 1972,
       "focus": "rhythm, stress, linking",
       "keywords": [
         "force",
@@ -4792,7 +4964,9 @@
       "sampleUtterance": "Here comes the sun, and I say it's all right.",
       "medium": "song",
       "ja": "太陽が昇ってくる、大丈夫だよ。",
-      "source": "The Beatles",
+      "source": "The Beatles · 1969",
+      "title": "The Beatles",
+      "year": 1969,
       "focus": "stress, intonation, flow",
       "keywords": [
         "sun",
@@ -4846,7 +5020,9 @@
       "sampleUtterance": "Don't stop believin', hold on to that feelin'.",
       "medium": "song",
       "ja": "信じ続けて、その気持ちを忘れないで。",
-      "source": "Journey",
+      "source": "Journey · 1981",
+      "title": "Journey",
+      "year": 1981,
       "focus": "stress, intonation, flow",
       "keywords": [
         "sun",
@@ -4908,7 +5084,9 @@
       "sampleUtterance": "We will, we will rock you.",
       "medium": "song",
       "ja": "俺たちはお前を揺さぶる。",
-      "source": "Queen",
+      "source": "Queen · 1977",
+      "title": "Queen",
+      "year": 1977,
       "focus": "stress, intonation, flow",
       "keywords": [
         "sun",
@@ -4943,7 +5121,9 @@
       "sampleUtterance": "Every breath you take, every move you make.",
       "medium": "song",
       "ja": "君の息づかいも、君の一挙手一投足も。",
-      "source": "The Police",
+      "source": "The Police · 1983",
+      "title": "The Police",
+      "year": 1983,
       "focus": "stress, intonation, flow",
       "keywords": [
         "sun",
@@ -5001,7 +5181,9 @@
       "sampleUtterance": "I walk a lonely road, the only one that I have ever known.",
       "medium": "song",
       "ja": "僕は孤独な道を歩く、ただ一つ知っている道を。",
-      "source": "Green Day",
+      "source": "Green Day · 2004",
+      "title": "Green Day",
+      "year": 2004,
       "focus": "stress, intonation, flow",
       "keywords": [
         "sun",
@@ -5071,7 +5253,9 @@
       "sampleUtterance": "What a wonderful world.",
       "medium": "song",
       "ja": "なんて素晴らしい世界。",
-      "source": "Louis Armstrong",
+      "source": "Louis Armstrong · 1967",
+      "title": "Louis Armstrong",
+      "year": 1967,
       "focus": "stress, intonation, flow",
       "keywords": [
         "sun",
@@ -5117,7 +5301,9 @@
       "sampleUtterance": "Hello darkness, my old friend.",
       "medium": "song",
       "ja": "こんにちは闇よ、古い友よ。",
-      "source": "Simon & Garfunkel",
+      "source": "Simon & Garfunkel · 1964",
+      "title": "Simon & Garfunkel",
+      "year": 1964,
       "focus": "stress, intonation, flow",
       "keywords": [
         "sun",
@@ -5159,7 +5345,9 @@
       "sampleUtterance": "Ain't no mountain high enough.",
       "medium": "song",
       "ja": "どんなに高い山も越えられる。",
-      "source": "Marvin Gaye & Tammi Terrell",
+      "source": "Marvin Gaye & Tammi Terrell · 1967",
+      "title": "Marvin Gaye & Tammi Terrell",
+      "year": 1967,
       "focus": "stress, intonation, flow",
       "keywords": [
         "sun",
@@ -5205,7 +5393,9 @@
       "sampleUtterance": "It's a beautiful day, don't let it get away.",
       "medium": "song",
       "ja": "美しい日だ、逃がさないで。",
-      "source": "U2",
+      "source": "U2 · 2000",
+      "title": "U2",
+      "year": 2000,
       "focus": "stress, intonation, flow",
       "keywords": [
         "sun",
@@ -5267,7 +5457,9 @@
       "sampleUtterance": "Imagine all the people living life in peace.",
       "medium": "song",
       "ja": "すべての人が平和に暮らす世界を想像して。",
-      "source": "John Lennon",
+      "source": "John Lennon · 1971",
+      "title": "John Lennon",
+      "year": 1971,
       "focus": "stress, intonation, flow",
       "keywords": [
         "sun",
@@ -5316,6 +5508,8 @@
       "medium": "song",
       "ja": "必要なのは愛だけだ。",
       "source": "The Beatles · 1967 · Boomers",
+      "title": "The Beatles",
+      "year": 1967,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -5393,6 +5587,8 @@
       "medium": "song",
       "ja": "なすがままに。",
       "source": "The Beatles · 1970 · Boomers",
+      "title": "The Beatles",
+      "year": 1970,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -5457,6 +5653,8 @@
       "medium": "song",
       "ja": "時代は変わりつつある。",
       "source": "Bob Dylan · 1964 · Boomers",
+      "title": "Bob Dylan",
+      "year": 1964,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -5532,6 +5730,8 @@
       "medium": "song",
       "ja": "友よ、答えは風に吹かれている。",
       "source": "Bob Dylan · 1963 · Boomers",
+      "title": "Bob Dylan",
+      "year": 1963,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -5629,6 +5829,8 @@
       "medium": "movie",
       "ja": "いつもの容疑者を集めろ。",
       "source": "Casablanca · 1942 · Boomers",
+      "title": "Casablanca",
+      "year": 1942,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -5704,6 +5906,8 @@
       "medium": "movie",
       "ja": "世界中のすべての町のすべてのバーの中で、彼女は私の店にやって来た。",
       "source": "Casablanca · 1942 · Boomers",
+      "title": "Casablanca",
+      "year": 1942,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -5787,6 +5991,8 @@
       "medium": "movie",
       "ja": "君に一言だけ言いたい。プラスチックだ。",
       "source": "The Graduate · 1967 · Boomers",
+      "title": "The Graduate",
+      "year": 1967,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -5864,6 +6070,8 @@
       "medium": "song",
       "ja": "ミセス・ロビンソンに乾杯。",
       "source": "Simon & Garfunkel · 1968 · Boomers",
+      "title": "Simon & Garfunkel",
+      "year": 1968,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -5935,6 +6143,8 @@
       "medium": "song",
       "ja": "音楽の音とともに山々は生きている。",
       "source": "The Sound of Music · 1965 · Boomers",
+      "title": "The Sound of Music",
+      "year": 1965,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -6020,6 +6230,8 @@
       "medium": "movie",
       "ja": "人間にとっては小さな一歩、人類にとっては偉大な飛躍。",
       "source": "Apollo 11 · 1969 · Boomers",
+      "title": "Apollo 11",
+      "year": 1969,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -6103,6 +6315,8 @@
       "medium": "song",
       "ja": "これは現実？それともただの幻想？",
       "source": "Queen · 1975 · Gen Jones",
+      "title": "Queen",
+      "year": 1975,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -6178,6 +6392,8 @@
       "medium": "song",
       "ja": "止めないで、今すごく楽しいんだ。",
       "source": "Queen · 1978 · Gen Jones",
+      "title": "Queen",
+      "year": 1978,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -6273,6 +6489,8 @@
       "medium": "movie",
       "ja": "お前の信仰心の欠如は気に障る。",
       "source": "Star Wars · 1977 · Gen Jones",
+      "title": "Star Wars",
+      "year": 1977,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -6337,6 +6555,8 @@
       "medium": "movie",
       "ja": "やるか、やらないかだ。試すというのはない。",
       "source": "Star Wars · 1980 · Gen Jones",
+      "title": "Star Wars",
+      "year": 1980,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -6408,6 +6628,8 @@
       "medium": "song",
       "ja": "ロクサーヌ、赤い灯をつける必要はない。",
       "source": "The Police · 1978 · Gen Jones",
+      "title": "The Police",
+      "year": 1978,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -6495,6 +6717,8 @@
       "medium": "song",
       "ja": "SOSを送っている。",
       "source": "The Police · 1979 · Gen Jones",
+      "title": "The Police",
+      "year": 1979,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -6566,6 +6790,8 @@
       "medium": "song",
       "ja": "君が望むやり方でいい。",
       "source": "Journey · 1980 · Gen Jones",
+      "title": "Journey",
+      "year": 1980,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -6647,6 +6873,8 @@
       "medium": "movie",
       "ja": "いつかこの戦争は終わる。",
       "source": "Apocalypse Now · 1979 · Gen Jones",
+      "title": "Apocalypse Now",
+      "year": 1979,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -6732,6 +6960,8 @@
       "medium": "song",
       "ja": "古い樫の木に黄色いリボンを結んで。",
       "source": "Tony Orlando & Dawn · 1973 · Gen Jones",
+      "title": "Tony Orlando & Dawn",
+      "year": 1973,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -6823,6 +7053,8 @@
       "medium": "song",
       "ja": "グリースこそすべて。",
       "source": "Grease · 1978 · Gen Jones",
+      "title": "Grease",
+      "year": 1978,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -6887,6 +7119,8 @@
       "medium": "movie",
       "ja": "生きたいならついて来い。",
       "source": "Terminator 2 · 1991 · Gen X",
+      "title": "Terminator 2",
+      "year": 1991,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -6970,6 +7204,8 @@
       "medium": "movie",
       "ja": "またな、ベイビー。",
       "source": "Terminator 2 · 1991 · Gen X",
+      "title": "Terminator 2",
+      "year": 1991,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -7071,6 +7307,8 @@
       "medium": "song",
       "ja": "明かりを消せば、危険は少ない。",
       "source": "Nirvana · 1991 · Gen X",
+      "title": "Nirvana",
+      "year": 1991,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -7146,6 +7384,8 @@
       "medium": "song",
       "ja": "僕の愚痴を聞く時間はある？",
       "source": "Green Day · 1994 · Gen X",
+      "title": "Green Day",
+      "year": 1994,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -7217,6 +7457,8 @@
       "medium": "movie",
       "ja": "ロワイヤル・ウィズ・チーズ。",
       "source": "Pulp Fiction · 1994 · Gen X",
+      "title": "Pulp Fiction",
+      "year": 1994,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -7292,6 +7534,8 @@
       "medium": "movie",
       "ja": "これから行く所に道はいらない。",
       "source": "Back to the Future · 1985 · Gen X",
+      "title": "Back to the Future",
+      "year": 1985,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -7369,6 +7613,8 @@
       "medium": "movie",
       "ja": "スプーンは存在しない。",
       "source": "The Matrix · 1999 · Gen X",
+      "title": "The Matrix",
+      "year": 1999,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -7440,6 +7686,8 @@
       "medium": "movie",
       "ja": "カンフーを覚えた。",
       "source": "The Matrix · 1999 · Gen X",
+      "title": "The Matrix",
+      "year": 1999,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -7511,6 +7759,8 @@
       "medium": "movie",
       "ja": "E.T.、家に電話する。",
       "source": "E.T. the Extra-Terrestrial · 1982 · Gen X",
+      "title": "E.T. the Extra-Terrestrial",
+      "year": 1982,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -7575,6 +7825,8 @@
       "medium": "movie",
       "ja": "お前には真実に耐えられない！",
       "source": "A Few Good Men · 1992 · Gen X",
+      "title": "A Few Good Men",
+      "year": 1992,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -7646,6 +7898,8 @@
       "medium": "movie",
       "ja": "私は世界の王だ！",
       "source": "Titanic · 1997 · Millennials",
+      "title": "Titanic",
+      "year": 1997,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -7717,6 +7971,8 @@
       "medium": "song",
       "ja": "私の心は生き続ける。",
       "source": "Céline Dion · Titanic · 1997 · Millennials",
+      "title": "Céline Dion",
+      "year": 1997,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -7788,6 +8044,8 @@
       "medium": "song",
       "ja": "あら、またやっちゃった。",
       "source": "Britney Spears · 2000 · Millennials",
+      "title": "Britney Spears",
+      "year": 2000,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -7859,6 +8117,8 @@
       "medium": "movie",
       "ja": "水曜日はピンクを着るの。",
       "source": "Mean Girls · 2004 · Millennials",
+      "title": "Mean Girls",
+      "year": 2004,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -7940,6 +8200,8 @@
       "medium": "movie",
       "ja": "私たちと一緒には座れないよ。",
       "source": "Mean Girls · 2004 · Millennials",
+      "title": "Mean Girls",
+      "year": 2004,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -8004,6 +8266,8 @@
       "medium": "movie",
       "ja": "モルドールにただ歩いて入ることはできない。",
       "source": "The Lord of the Rings · 2001 · Millennials",
+      "title": "The Lord of the Rings",
+      "year": 2001,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -8081,6 +8345,8 @@
       "medium": "movie",
       "ja": "ここを通すわけにはいかない！",
       "source": "The Lord of the Rings · 2001 · Millennials",
+      "title": "The Lord of the Rings",
+      "year": 2001,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -8145,6 +8411,8 @@
       "medium": "song",
       "ja": "音楽とその瞬間に身をゆだねろ。",
       "source": "Eminem · 2002 · Millennials",
+      "title": "Eminem",
+      "year": 2002,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -8246,6 +8514,8 @@
       "medium": "movie",
       "ja": "魚は友達、食べ物じゃない。",
       "source": "Finding Nemo · 2003 · Millennials",
+      "title": "Finding Nemo",
+      "year": 2003,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -8317,6 +8587,8 @@
       "medium": "movie",
       "ja": "死んだ人が見える。",
       "source": "The Sixth Sense · 1999 · Millennials",
+      "title": "The Sixth Sense",
+      "year": 1999,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -8394,6 +8666,8 @@
       "medium": "movie",
       "ja": "私は避けられない存在だ。",
       "source": "Avengers: Endgame · 2019 · Gen Z",
+      "title": "Avengers: Endgame",
+      "year": 2019,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -8469,6 +8743,8 @@
       "medium": "movie",
       "ja": "そして私はアイアンマンだ。",
       "source": "Avengers: Endgame · 2019 · Gen Z",
+      "title": "Avengers: Endgame",
+      "year": 2019,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -8544,6 +8820,8 @@
       "medium": "movie",
       "ja": "もう最終局面だ。",
       "source": "Avengers: Infinity War · 2018 · Gen Z",
+      "title": "Avengers: Infinity War",
+      "year": 2018,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -8615,6 +8893,8 @@
       "medium": "song",
       "ja": "私は悪者よ。",
       "source": "Billie Eilish · 2019 · Gen Z",
+      "title": "Billie Eilish",
+      "year": 2019,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -8692,6 +8972,8 @@
       "medium": "song",
       "ja": "私は何のために作られたの？",
       "source": "Billie Eilish · 2023 · Gen Z",
+      "title": "Billie Eilish",
+      "year": 2023,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -8756,6 +9038,8 @@
       "medium": "movie",
       "ja": "その良き夜に静かに身をゆだねるな。",
       "source": "Interstellar · 2014 · Gen Z",
+      "title": "Interstellar",
+      "year": 2014,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -8833,6 +9117,8 @@
       "medium": "movie",
       "ja": "それは信じる一跳びだ。",
       "source": "Spider-Man: Into the Spider-Verse · 2018 · Gen Z",
+      "title": "Spider-Man: Into the Spider-Verse",
+      "year": 2018,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -8897,6 +9183,8 @@
       "medium": "movie",
       "ja": "誰でもマスクをかぶれる。",
       "source": "Spider-Man: Into the Spider-Verse · 2018 · Gen Z",
+      "title": "Spider-Man: Into the Spider-Verse",
+      "year": 2018,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -8978,6 +9266,8 @@
       "medium": "song",
       "ja": "ここは残酷だ。",
       "source": "Olivia Rodrigo · 2021 · Gen Z",
+      "title": "Olivia Rodrigo",
+      "year": 2021,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -9059,6 +9349,8 @@
       "medium": "song",
       "ja": "私よ、こんにちは、問題は私なの。",
       "source": "Taylor Swift · 2022 · Gen Z",
+      "title": "Taylor Swift",
+      "year": 2022,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -9130,6 +9422,8 @@
       "medium": "song",
       "ja": "ありのままに、ありのままに。",
       "source": "Frozen · 2013 · Gen Alpha",
+      "title": "Frozen",
+      "year": 2013,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -9194,6 +9488,8 @@
       "medium": "song",
       "ja": "雪だるまを作らない？",
       "source": "Frozen · 2013 · Gen Alpha",
+      "title": "Frozen",
+      "year": 2013,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -9281,6 +9577,8 @@
       "medium": "song",
       "ja": "ブルーノの話はしない。",
       "source": "Encanto · 2021 · Gen Alpha",
+      "title": "Encanto",
+      "year": 2021,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -9378,6 +9676,8 @@
       "medium": "song",
       "ja": "奇跡を待っている。",
       "source": "Encanto · 2021 · Gen Alpha",
+      "title": "Encanto",
+      "year": 2021,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -9463,6 +9763,8 @@
       "medium": "movie",
       "ja": "マリオだよ！",
       "source": "The Super Mario Bros. Movie · 2023 · Gen Alpha",
+      "title": "The Super Mario Bros. Movie",
+      "year": 2023,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -9548,6 +9850,8 @@
       "medium": "movie",
       "ja": "マンマ・ミーア！",
       "source": "The Super Mario Bros. Movie · 2023 · Gen Alpha",
+      "title": "The Super Mario Bros. Movie",
+      "year": 2023,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -9629,6 +9933,8 @@
       "medium": "song",
       "ja": "僕たちは道を知っている。",
       "source": "Moana · 2016 · Gen Alpha",
+      "title": "Moana",
+      "year": 2016,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -9700,6 +10006,8 @@
       "medium": "song",
       "ja": "空と海が出会う線が見える？それが私を呼んでいる。",
       "source": "Moana · 2016 · Gen Alpha",
+      "title": "Moana",
+      "year": 2016,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -9777,6 +10085,8 @@
       "medium": "movie",
       "ja": "これが道だ。",
       "source": "The Mandalorian · 2019 · Gen Alpha",
+      "title": "The Mandalorian",
+      "year": 2019,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -9841,6 +10151,8 @@
       "medium": "song",
       "ja": "ベイビーシャーク、ドゥドゥドゥドゥドゥドゥ。",
       "source": "Pinkfong · 2016 · Gen Alpha",
+      "title": "Pinkfong",
+      "year": 2016,
       "focus": "every cohort in release order",
       "keywords": [
         "love",
@@ -9916,6 +10228,8 @@
       "medium": "song",
       "ja": "必要なのは愛だけだ。",
       "source": "The Beatles · 1967",
+      "title": "The Beatles",
+      "year": 1967,
       "focus": "classic cinema, rock & folk",
       "keywords": [
         "love",
@@ -9967,6 +10281,8 @@
       "medium": "song",
       "ja": "なすがままに。",
       "source": "The Beatles · 1970",
+      "title": "The Beatles",
+      "year": 1970,
       "focus": "classic cinema, rock & folk",
       "keywords": [
         "love",
@@ -10005,6 +10321,8 @@
       "medium": "song",
       "ja": "時代は変わりつつある。",
       "source": "Bob Dylan · 1964",
+      "title": "Bob Dylan",
+      "year": 1964,
       "focus": "classic cinema, rock & folk",
       "keywords": [
         "love",
@@ -10054,6 +10372,8 @@
       "medium": "song",
       "ja": "友よ、答えは風に吹かれている。",
       "source": "Bob Dylan · 1963",
+      "title": "Bob Dylan",
+      "year": 1963,
       "focus": "classic cinema, rock & folk",
       "keywords": [
         "love",
@@ -10125,6 +10445,8 @@
       "medium": "movie",
       "ja": "いつもの容疑者を集めろ。",
       "source": "Casablanca · 1942",
+      "title": "Casablanca",
+      "year": 1942,
       "focus": "classic cinema, rock & folk",
       "keywords": [
         "love",
@@ -10174,6 +10496,8 @@
       "medium": "movie",
       "ja": "世界中のすべての町のすべてのバーの中で、彼女は私の店にやって来た。",
       "source": "Casablanca · 1942",
+      "title": "Casablanca",
+      "year": 1942,
       "focus": "classic cinema, rock & folk",
       "keywords": [
         "love",
@@ -10231,6 +10555,8 @@
       "medium": "movie",
       "ja": "君に一言だけ言いたい。プラスチックだ。",
       "source": "The Graduate · 1967",
+      "title": "The Graduate",
+      "year": 1967,
       "focus": "classic cinema, rock & folk",
       "keywords": [
         "love",
@@ -10282,6 +10608,8 @@
       "medium": "song",
       "ja": "ミセス・ロビンソンに乾杯。",
       "source": "Simon & Garfunkel · 1968",
+      "title": "Simon & Garfunkel",
+      "year": 1968,
       "focus": "classic cinema, rock & folk",
       "keywords": [
         "love",
@@ -10327,6 +10655,8 @@
       "medium": "song",
       "ja": "音楽の音とともに山々は生きている。",
       "source": "The Sound of Music · 1965",
+      "title": "The Sound of Music",
+      "year": 1965,
       "focus": "classic cinema, rock & folk",
       "keywords": [
         "love",
@@ -10386,6 +10716,8 @@
       "medium": "movie",
       "ja": "人間にとっては小さな一歩、人類にとっては偉大な飛躍。",
       "source": "Apollo 11 · 1969",
+      "title": "Apollo 11",
+      "year": 1969,
       "focus": "classic cinema, rock & folk",
       "keywords": [
         "love",
@@ -10443,6 +10775,8 @@
       "medium": "song",
       "ja": "これは現実？それともただの幻想？",
       "source": "Queen · 1975",
+      "title": "Queen",
+      "year": 1975,
       "focus": "new wave, arena rock, late-70s film",
       "keywords": [
         "real life",
@@ -10492,6 +10826,8 @@
       "medium": "song",
       "ja": "止めないで、今すごく楽しいんだ。",
       "source": "Queen · 1978",
+      "title": "Queen",
+      "year": 1978,
       "focus": "new wave, arena rock, late-70s film",
       "keywords": [
         "real life",
@@ -10561,6 +10897,8 @@
       "medium": "movie",
       "ja": "お前の信仰心の欠如は気に障る。",
       "source": "Star Wars · 1977",
+      "title": "Star Wars",
+      "year": 1977,
       "focus": "new wave, arena rock, late-70s film",
       "keywords": [
         "real life",
@@ -10599,6 +10937,8 @@
       "medium": "movie",
       "ja": "やるか、やらないかだ。試すというのはない。",
       "source": "Star Wars · 1980",
+      "title": "Star Wars",
+      "year": 1980,
       "focus": "new wave, arena rock, late-70s film",
       "keywords": [
         "real life",
@@ -10644,6 +10984,8 @@
       "medium": "song",
       "ja": "ロクサーヌ、赤い灯をつける必要はない。",
       "source": "The Police · 1978",
+      "title": "The Police",
+      "year": 1978,
       "focus": "new wave, arena rock, late-70s film",
       "keywords": [
         "real life",
@@ -10705,6 +11047,8 @@
       "medium": "song",
       "ja": "SOSを送っている。",
       "source": "The Police · 1979",
+      "title": "The Police",
+      "year": 1979,
       "focus": "new wave, arena rock, late-70s film",
       "keywords": [
         "real life",
@@ -10750,6 +11094,8 @@
       "medium": "song",
       "ja": "君が望むやり方でいい。",
       "source": "Journey · 1980",
+      "title": "Journey",
+      "year": 1980,
       "focus": "new wave, arena rock, late-70s film",
       "keywords": [
         "real life",
@@ -10805,6 +11151,8 @@
       "medium": "movie",
       "ja": "いつかこの戦争は終わる。",
       "source": "Apocalypse Now · 1979",
+      "title": "Apocalypse Now",
+      "year": 1979,
       "focus": "new wave, arena rock, late-70s film",
       "keywords": [
         "real life",
@@ -10864,6 +11212,8 @@
       "medium": "song",
       "ja": "古い樫の木に黄色いリボンを結んで。",
       "source": "Tony Orlando & Dawn · 1973",
+      "title": "Tony Orlando & Dawn",
+      "year": 1973,
       "focus": "new wave, arena rock, late-70s film",
       "keywords": [
         "real life",
@@ -10929,6 +11279,8 @@
       "medium": "song",
       "ja": "グリースこそすべて。",
       "source": "Grease · 1978",
+      "title": "Grease",
+      "year": 1978,
       "focus": "new wave, arena rock, late-70s film",
       "keywords": [
         "real life",
@@ -10967,6 +11319,8 @@
       "medium": "movie",
       "ja": "生きたいならついて来い。",
       "source": "Terminator 2 · 1991",
+      "title": "Terminator 2",
+      "year": 1991,
       "focus": "80s/90s cinema, grunge & alt-rock",
       "keywords": [
         "live",
@@ -11024,6 +11378,8 @@
       "medium": "movie",
       "ja": "またな、ベイビー。",
       "source": "Terminator 2 · 1991",
+      "title": "Terminator 2",
+      "year": 1991,
       "focus": "80s/90s cinema, grunge & alt-rock",
       "keywords": [
         "live",
@@ -11099,6 +11455,8 @@
       "medium": "song",
       "ja": "明かりを消せば、危険は少ない。",
       "source": "Nirvana · 1991",
+      "title": "Nirvana",
+      "year": 1991,
       "focus": "80s/90s cinema, grunge & alt-rock",
       "keywords": [
         "live",
@@ -11148,6 +11506,8 @@
       "medium": "song",
       "ja": "僕の愚痴を聞く時間はある？",
       "source": "Green Day · 1994",
+      "title": "Green Day",
+      "year": 1994,
       "focus": "80s/90s cinema, grunge & alt-rock",
       "keywords": [
         "live",
@@ -11193,6 +11553,8 @@
       "medium": "movie",
       "ja": "ロワイヤル・ウィズ・チーズ。",
       "source": "Pulp Fiction · 1994",
+      "title": "Pulp Fiction",
+      "year": 1994,
       "focus": "80s/90s cinema, grunge & alt-rock",
       "keywords": [
         "live",
@@ -11242,6 +11604,8 @@
       "medium": "movie",
       "ja": "これから行く所に道はいらない。",
       "source": "Back to the Future · 1985",
+      "title": "Back to the Future",
+      "year": 1985,
       "focus": "80s/90s cinema, grunge & alt-rock",
       "keywords": [
         "live",
@@ -11293,6 +11657,8 @@
       "medium": "movie",
       "ja": "スプーンは存在しない。",
       "source": "The Matrix · 1999",
+      "title": "The Matrix",
+      "year": 1999,
       "focus": "80s/90s cinema, grunge & alt-rock",
       "keywords": [
         "live",
@@ -11338,6 +11704,8 @@
       "medium": "movie",
       "ja": "カンフーを覚えた。",
       "source": "The Matrix · 1999",
+      "title": "The Matrix",
+      "year": 1999,
       "focus": "80s/90s cinema, grunge & alt-rock",
       "keywords": [
         "live",
@@ -11383,6 +11751,8 @@
       "medium": "movie",
       "ja": "E.T.、家に電話する。",
       "source": "E.T. the Extra-Terrestrial · 1982",
+      "title": "E.T. the Extra-Terrestrial",
+      "year": 1982,
       "focus": "80s/90s cinema, grunge & alt-rock",
       "keywords": [
         "live",
@@ -11421,6 +11791,8 @@
       "medium": "movie",
       "ja": "お前には真実に耐えられない！",
       "source": "A Few Good Men · 1992",
+      "title": "A Few Good Men",
+      "year": 1992,
       "focus": "80s/90s cinema, grunge & alt-rock",
       "keywords": [
         "live",
@@ -11466,6 +11838,8 @@
       "medium": "movie",
       "ja": "私は世界の王だ！",
       "source": "Titanic · 1997",
+      "title": "Titanic",
+      "year": 1997,
       "focus": "late-90s & 2000s pop culture",
       "keywords": [
         "king of the world",
@@ -11511,6 +11885,8 @@
       "medium": "song",
       "ja": "私の心は生き続ける。",
       "source": "Céline Dion · Titanic · 1997",
+      "title": "Céline Dion",
+      "year": 1997,
       "focus": "late-90s & 2000s pop culture",
       "keywords": [
         "king of the world",
@@ -11556,6 +11932,8 @@
       "medium": "song",
       "ja": "あら、またやっちゃった。",
       "source": "Britney Spears · 2000",
+      "title": "Britney Spears",
+      "year": 2000,
       "focus": "late-90s & 2000s pop culture",
       "keywords": [
         "king of the world",
@@ -11601,6 +11979,8 @@
       "medium": "movie",
       "ja": "水曜日はピンクを着るの。",
       "source": "Mean Girls · 2004",
+      "title": "Mean Girls",
+      "year": 2004,
       "focus": "late-90s & 2000s pop culture",
       "keywords": [
         "king of the world",
@@ -11656,6 +12036,8 @@
       "medium": "movie",
       "ja": "私たちと一緒には座れないよ。",
       "source": "Mean Girls · 2004",
+      "title": "Mean Girls",
+      "year": 2004,
       "focus": "late-90s & 2000s pop culture",
       "keywords": [
         "king of the world",
@@ -11694,6 +12076,8 @@
       "medium": "movie",
       "ja": "モルドールにただ歩いて入ることはできない。",
       "source": "The Lord of the Rings · 2001",
+      "title": "The Lord of the Rings",
+      "year": 2001,
       "focus": "late-90s & 2000s pop culture",
       "keywords": [
         "king of the world",
@@ -11745,6 +12129,8 @@
       "medium": "movie",
       "ja": "ここを通すわけにはいかない！",
       "source": "The Lord of the Rings · 2001",
+      "title": "The Lord of the Rings",
+      "year": 2001,
       "focus": "late-90s & 2000s pop culture",
       "keywords": [
         "king of the world",
@@ -11783,6 +12169,8 @@
       "medium": "song",
       "ja": "音楽とその瞬間に身をゆだねろ。",
       "source": "Eminem · 2002",
+      "title": "Eminem",
+      "year": 2002,
       "focus": "late-90s & 2000s pop culture",
       "keywords": [
         "king of the world",
@@ -11858,6 +12246,8 @@
       "medium": "movie",
       "ja": "魚は友達、食べ物じゃない。",
       "source": "Finding Nemo · 2003",
+      "title": "Finding Nemo",
+      "year": 2003,
       "focus": "late-90s & 2000s pop culture",
       "keywords": [
         "king of the world",
@@ -11903,6 +12293,8 @@
       "medium": "movie",
       "ja": "死んだ人が見える。",
       "source": "The Sixth Sense · 1999",
+      "title": "The Sixth Sense",
+      "year": 1999,
       "focus": "late-90s & 2000s pop culture",
       "keywords": [
         "king of the world",
@@ -11954,6 +12346,8 @@
       "medium": "movie",
       "ja": "私は避けられない存在だ。",
       "source": "Avengers: Endgame · 2019",
+      "title": "Avengers: Endgame",
+      "year": 2019,
       "focus": "2010s hits, MCU & streaming",
       "keywords": [
         "inevitable",
@@ -12003,6 +12397,8 @@
       "medium": "movie",
       "ja": "そして私はアイアンマンだ。",
       "source": "Avengers: Endgame · 2019",
+      "title": "Avengers: Endgame",
+      "year": 2019,
       "focus": "2010s hits, MCU & streaming",
       "keywords": [
         "inevitable",
@@ -12052,6 +12448,8 @@
       "medium": "movie",
       "ja": "もう最終局面だ。",
       "source": "Avengers: Infinity War · 2018",
+      "title": "Avengers: Infinity War",
+      "year": 2018,
       "focus": "2010s hits, MCU & streaming",
       "keywords": [
         "inevitable",
@@ -12097,6 +12495,8 @@
       "medium": "song",
       "ja": "私は悪者よ。",
       "source": "Billie Eilish · 2019",
+      "title": "Billie Eilish",
+      "year": 2019,
       "focus": "2010s hits, MCU & streaming",
       "keywords": [
         "inevitable",
@@ -12148,6 +12548,8 @@
       "medium": "song",
       "ja": "私は何のために作られたの？",
       "source": "Billie Eilish · 2023",
+      "title": "Billie Eilish",
+      "year": 2023,
       "focus": "2010s hits, MCU & streaming",
       "keywords": [
         "inevitable",
@@ -12186,6 +12588,8 @@
       "medium": "movie",
       "ja": "その良き夜に静かに身をゆだねるな。",
       "source": "Interstellar · 2014",
+      "title": "Interstellar",
+      "year": 2014,
       "focus": "2010s hits, MCU & streaming",
       "keywords": [
         "inevitable",
@@ -12237,6 +12641,8 @@
       "medium": "movie",
       "ja": "それは信じる一跳びだ。",
       "source": "Spider-Man: Into the Spider-Verse · 2018",
+      "title": "Spider-Man: Into the Spider-Verse",
+      "year": 2018,
       "focus": "2010s hits, MCU & streaming",
       "keywords": [
         "inevitable",
@@ -12275,6 +12681,8 @@
       "medium": "movie",
       "ja": "誰でもマスクをかぶれる。",
       "source": "Spider-Man: Into the Spider-Verse · 2018",
+      "title": "Spider-Man: Into the Spider-Verse",
+      "year": 2018,
       "focus": "2010s hits, MCU & streaming",
       "keywords": [
         "inevitable",
@@ -12330,6 +12738,8 @@
       "medium": "song",
       "ja": "ここは残酷だ。",
       "source": "Olivia Rodrigo · 2021",
+      "title": "Olivia Rodrigo",
+      "year": 2021,
       "focus": "2010s hits, MCU & streaming",
       "keywords": [
         "inevitable",
@@ -12385,6 +12795,8 @@
       "medium": "song",
       "ja": "私よ、こんにちは、問題は私なの。",
       "source": "Taylor Swift · 2022",
+      "title": "Taylor Swift",
+      "year": 2022,
       "focus": "2010s hits, MCU & streaming",
       "keywords": [
         "inevitable",
@@ -12430,6 +12842,8 @@
       "medium": "song",
       "ja": "ありのままに、ありのままに。",
       "source": "Frozen · 2013",
+      "title": "Frozen",
+      "year": 2013,
       "focus": "viral animated lines & current hooks",
       "keywords": [
         "let it go",
@@ -12466,6 +12880,8 @@
       "medium": "song",
       "ja": "雪だるまを作らない？",
       "source": "Frozen · 2013",
+      "title": "Frozen",
+      "year": 2013,
       "focus": "viral animated lines & current hooks",
       "keywords": [
         "let it go",
@@ -12525,6 +12941,8 @@
       "medium": "song",
       "ja": "ブルーノの話はしない。",
       "source": "Encanto · 2021",
+      "title": "Encanto",
+      "year": 2021,
       "focus": "viral animated lines & current hooks",
       "keywords": [
         "let it go",
@@ -12594,6 +13012,8 @@
       "medium": "song",
       "ja": "奇跡を待っている。",
       "source": "Encanto · 2021",
+      "title": "Encanto",
+      "year": 2021,
       "focus": "viral animated lines & current hooks",
       "keywords": [
         "let it go",
@@ -12651,6 +13071,8 @@
       "medium": "movie",
       "ja": "マリオだよ！",
       "source": "The Super Mario Bros. Movie · 2023",
+      "title": "The Super Mario Bros. Movie",
+      "year": 2023,
       "focus": "viral animated lines & current hooks",
       "keywords": [
         "let it go",
@@ -12708,6 +13130,8 @@
       "medium": "movie",
       "ja": "マンマ・ミーア！",
       "source": "The Super Mario Bros. Movie · 2023",
+      "title": "The Super Mario Bros. Movie",
+      "year": 2023,
       "focus": "viral animated lines & current hooks",
       "keywords": [
         "let it go",
@@ -12761,6 +13185,8 @@
       "medium": "song",
       "ja": "僕たちは道を知っている。",
       "source": "Moana · 2016",
+      "title": "Moana",
+      "year": 2016,
       "focus": "viral animated lines & current hooks",
       "keywords": [
         "let it go",
@@ -12804,6 +13230,8 @@
       "medium": "song",
       "ja": "空と海が出会う線が見える？それが私を呼んでいる。",
       "source": "Moana · 2016",
+      "title": "Moana",
+      "year": 2016,
       "focus": "viral animated lines & current hooks",
       "keywords": [
         "let it go",
@@ -12853,6 +13281,8 @@
       "medium": "movie",
       "ja": "これが道だ。",
       "source": "The Mandalorian · 2019",
+      "title": "The Mandalorian",
+      "year": 2019,
       "focus": "viral animated lines & current hooks",
       "keywords": [
         "let it go",
@@ -12889,6 +13319,8 @@
       "medium": "song",
       "ja": "ベイビーシャーク、ドゥドゥドゥドゥドゥドゥ。",
       "source": "Pinkfong · 2016",
+      "title": "Pinkfong",
+      "year": 2016,
       "focus": "viral animated lines & current hooks",
       "keywords": [
         "let it go",
@@ -12936,6 +13368,8 @@
       "medium": "song",
       "ja": "友よ、答えは風に吹かれている。",
       "source": "Bob Dylan · 1963 · Boomers",
+      "title": "Bob Dylan",
+      "year": 1963,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -13033,6 +13467,8 @@
       "medium": "song",
       "ja": "僕の愚痴を聞く時間はある？",
       "source": "Green Day · 1994 · Gen X",
+      "title": "Green Day",
+      "year": 1994,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -13104,6 +13540,8 @@
       "medium": "song",
       "ja": "私の心は生き続ける。",
       "source": "Céline Dion · Titanic · 1997 · Millennials",
+      "title": "Céline Dion",
+      "year": 1997,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -13175,6 +13613,8 @@
       "medium": "movie",
       "ja": "お前には真実に耐えられない！",
       "source": "A Few Good Men · 1992 · Gen X",
+      "title": "A Few Good Men",
+      "year": 1992,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -13246,6 +13686,8 @@
       "medium": "song",
       "ja": "あら、またやっちゃった。",
       "source": "Britney Spears · 2000 · Millennials",
+      "title": "Britney Spears",
+      "year": 2000,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -13317,6 +13759,8 @@
       "medium": "movie",
       "ja": "これから行く所に道はいらない。",
       "source": "Back to the Future · 1985 · Gen X",
+      "title": "Back to the Future",
+      "year": 1985,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -13394,6 +13838,8 @@
       "medium": "movie",
       "ja": "やるか、やらないかだ。試すというのはない。",
       "source": "Star Wars · 1980 · Gen Jones",
+      "title": "Star Wars",
+      "year": 1980,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -13465,6 +13911,8 @@
       "medium": "movie",
       "ja": "生きたいならついて来い。",
       "source": "Terminator 2 · 1991 · Gen X",
+      "title": "Terminator 2",
+      "year": 1991,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -13548,6 +13996,8 @@
       "medium": "song",
       "ja": "音楽とその瞬間に身をゆだねろ。",
       "source": "Eminem · 2002 · Millennials",
+      "title": "Eminem",
+      "year": 2002,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -13649,6 +14099,8 @@
       "medium": "movie",
       "ja": "モルドールにただ歩いて入ることはできない。",
       "source": "The Lord of the Rings · 2001 · Millennials",
+      "title": "The Lord of the Rings",
+      "year": 2001,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -13726,6 +14178,8 @@
       "medium": "song",
       "ja": "なすがままに。",
       "source": "The Beatles · 1970 · Boomers",
+      "title": "The Beatles",
+      "year": 1970,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -13790,6 +14244,8 @@
       "medium": "movie",
       "ja": "水曜日はピンクを着るの。",
       "source": "Mean Girls · 2004 · Millennials",
+      "title": "Mean Girls",
+      "year": 2004,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -13871,6 +14327,8 @@
       "medium": "movie",
       "ja": "カンフーを覚えた。",
       "source": "The Matrix · 1999 · Gen X",
+      "title": "The Matrix",
+      "year": 1999,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -13942,6 +14400,8 @@
       "medium": "song",
       "ja": "音楽の音とともに山々は生きている。",
       "source": "The Sound of Music · 1965 · Boomers",
+      "title": "The Sound of Music",
+      "year": 1965,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -14027,6 +14487,8 @@
       "medium": "song",
       "ja": "雪だるまを作らない？",
       "source": "Frozen · 2013 · Gen Alpha",
+      "title": "Frozen",
+      "year": 2013,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -14114,6 +14576,8 @@
       "medium": "song",
       "ja": "古い樫の木に黄色いリボンを結んで。",
       "source": "Tony Orlando & Dawn · 1973 · Gen Jones",
+      "title": "Tony Orlando & Dawn",
+      "year": 1973,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -14205,6 +14669,8 @@
       "medium": "song",
       "ja": "止めないで、今すごく楽しいんだ。",
       "source": "Queen · 1978 · Gen Jones",
+      "title": "Queen",
+      "year": 1978,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -14300,6 +14766,8 @@
       "medium": "song",
       "ja": "時代は変わりつつある。",
       "source": "Bob Dylan · 1964 · Boomers",
+      "title": "Bob Dylan",
+      "year": 1964,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -14375,6 +14843,8 @@
       "medium": "song",
       "ja": "ブルーノの話はしない。",
       "source": "Encanto · 2021 · Gen Alpha",
+      "title": "Encanto",
+      "year": 2021,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -14472,6 +14942,8 @@
       "medium": "movie",
       "ja": "君に一言だけ言いたい。プラスチックだ。",
       "source": "The Graduate · 1967 · Boomers",
+      "title": "The Graduate",
+      "year": 1967,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -14549,6 +15021,8 @@
       "medium": "movie",
       "ja": "お前の信仰心の欠如は気に障る。",
       "source": "Star Wars · 1977 · Gen Jones",
+      "title": "Star Wars",
+      "year": 1977,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -14613,6 +15087,8 @@
       "medium": "movie",
       "ja": "スプーンは存在しない。",
       "source": "The Matrix · 1999 · Gen X",
+      "title": "The Matrix",
+      "year": 1999,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -14684,6 +15160,8 @@
       "medium": "movie",
       "ja": "E.T.、家に電話する。",
       "source": "E.T. the Extra-Terrestrial · 1982 · Gen X",
+      "title": "E.T. the Extra-Terrestrial",
+      "year": 1982,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -14748,6 +15226,8 @@
       "medium": "movie",
       "ja": "ロワイヤル・ウィズ・チーズ。",
       "source": "Pulp Fiction · 1994 · Gen X",
+      "title": "Pulp Fiction",
+      "year": 1994,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -14823,6 +15303,8 @@
       "medium": "song",
       "ja": "ミセス・ロビンソンに乾杯。",
       "source": "Simon & Garfunkel · 1968 · Boomers",
+      "title": "Simon & Garfunkel",
+      "year": 1968,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -14894,6 +15376,8 @@
       "medium": "movie",
       "ja": "誰でもマスクをかぶれる。",
       "source": "Spider-Man: Into the Spider-Verse · 2018 · Gen Z",
+      "title": "Spider-Man: Into the Spider-Verse",
+      "year": 2018,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -14975,6 +15459,8 @@
       "medium": "song",
       "ja": "グリースこそすべて。",
       "source": "Grease · 1978 · Gen Jones",
+      "title": "Grease",
+      "year": 1978,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -15039,6 +15525,8 @@
       "medium": "movie",
       "ja": "魚は友達、食べ物じゃない。",
       "source": "Finding Nemo · 2003 · Millennials",
+      "title": "Finding Nemo",
+      "year": 2003,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -15110,6 +15598,8 @@
       "medium": "movie",
       "ja": "マンマ・ミーア！",
       "source": "The Super Mario Bros. Movie · 2023 · Gen Alpha",
+      "title": "The Super Mario Bros. Movie",
+      "year": 2023,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -15191,6 +15681,8 @@
       "medium": "song",
       "ja": "ありのままに、ありのままに。",
       "source": "Frozen · 2013 · Gen Alpha",
+      "title": "Frozen",
+      "year": 2013,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -15255,6 +15747,8 @@
       "medium": "movie",
       "ja": "いつかこの戦争は終わる。",
       "source": "Apocalypse Now · 1979 · Gen Jones",
+      "title": "Apocalypse Now",
+      "year": 1979,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -15340,6 +15834,8 @@
       "medium": "song",
       "ja": "SOSを送っている。",
       "source": "The Police · 1979 · Gen Jones",
+      "title": "The Police",
+      "year": 1979,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -15411,6 +15907,8 @@
       "medium": "movie",
       "ja": "世界中のすべての町のすべてのバーの中で、彼女は私の店にやって来た。",
       "source": "Casablanca · 1942 · Boomers",
+      "title": "Casablanca",
+      "year": 1942,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -15494,6 +15992,8 @@
       "medium": "song",
       "ja": "空と海が出会う線が見える？それが私を呼んでいる。",
       "source": "Moana · 2016 · Gen Alpha",
+      "title": "Moana",
+      "year": 2016,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -15571,6 +16071,8 @@
       "medium": "song",
       "ja": "私は何のために作られたの？",
       "source": "Billie Eilish · 2023 · Gen Z",
+      "title": "Billie Eilish",
+      "year": 2023,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -15635,6 +16137,8 @@
       "medium": "song",
       "ja": "奇跡を待っている。",
       "source": "Encanto · 2021 · Gen Alpha",
+      "title": "Encanto",
+      "year": 2021,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -15720,6 +16224,8 @@
       "medium": "movie",
       "ja": "その良き夜に静かに身をゆだねるな。",
       "source": "Interstellar · 2014 · Gen Z",
+      "title": "Interstellar",
+      "year": 2014,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -15797,6 +16303,8 @@
       "medium": "song",
       "ja": "君が望むやり方でいい。",
       "source": "Journey · 1980 · Gen Jones",
+      "title": "Journey",
+      "year": 1980,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -15878,6 +16386,8 @@
       "medium": "movie",
       "ja": "そして私はアイアンマンだ。",
       "source": "Avengers: Endgame · 2019 · Gen Z",
+      "title": "Avengers: Endgame",
+      "year": 2019,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -15953,6 +16463,8 @@
       "medium": "movie",
       "ja": "私は世界の王だ！",
       "source": "Titanic · 1997 · Millennials",
+      "title": "Titanic",
+      "year": 1997,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -16024,6 +16536,8 @@
       "medium": "song",
       "ja": "ロクサーヌ、赤い灯をつける必要はない。",
       "source": "The Police · 1978 · Gen Jones",
+      "title": "The Police",
+      "year": 1978,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -16111,6 +16625,8 @@
       "medium": "movie",
       "ja": "私は避けられない存在だ。",
       "source": "Avengers: Endgame · 2019 · Gen Z",
+      "title": "Avengers: Endgame",
+      "year": 2019,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -16186,6 +16702,8 @@
       "medium": "movie",
       "ja": "またな、ベイビー。",
       "source": "Terminator 2 · 1991 · Gen X",
+      "title": "Terminator 2",
+      "year": 1991,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -16287,6 +16805,8 @@
       "medium": "song",
       "ja": "ベイビーシャーク、ドゥドゥドゥドゥドゥドゥ。",
       "source": "Pinkfong · 2016 · Gen Alpha",
+      "title": "Pinkfong",
+      "year": 2016,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -16362,6 +16882,8 @@
       "medium": "song",
       "ja": "ここは残酷だ。",
       "source": "Olivia Rodrigo · 2021 · Gen Z",
+      "title": "Olivia Rodrigo",
+      "year": 2021,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -16443,6 +16965,8 @@
       "medium": "movie",
       "ja": "人間にとっては小さな一歩、人類にとっては偉大な飛躍。",
       "source": "Apollo 11 · 1969 · Boomers",
+      "title": "Apollo 11",
+      "year": 1969,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -16526,6 +17050,8 @@
       "medium": "movie",
       "ja": "ここを通すわけにはいかない！",
       "source": "The Lord of the Rings · 2001 · Millennials",
+      "title": "The Lord of the Rings",
+      "year": 2001,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -16590,6 +17116,8 @@
       "medium": "song",
       "ja": "私よ、こんにちは、問題は私なの。",
       "source": "Taylor Swift · 2022 · Gen Z",
+      "title": "Taylor Swift",
+      "year": 2022,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -16661,6 +17189,8 @@
       "medium": "song",
       "ja": "必要なのは愛だけだ。",
       "source": "The Beatles · 1967 · Boomers",
+      "title": "The Beatles",
+      "year": 1967,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -16738,6 +17268,8 @@
       "medium": "song",
       "ja": "明かりを消せば、危険は少ない。",
       "source": "Nirvana · 1991 · Gen X",
+      "title": "Nirvana",
+      "year": 1991,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -16813,6 +17345,8 @@
       "medium": "movie",
       "ja": "これが道だ。",
       "source": "The Mandalorian · 2019 · Gen Alpha",
+      "title": "The Mandalorian",
+      "year": 2019,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -16877,6 +17411,8 @@
       "medium": "song",
       "ja": "僕たちは道を知っている。",
       "source": "Moana · 2016 · Gen Alpha",
+      "title": "Moana",
+      "year": 2016,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -16948,6 +17484,8 @@
       "medium": "movie",
       "ja": "マリオだよ！",
       "source": "The Super Mario Bros. Movie · 2023 · Gen Alpha",
+      "title": "The Super Mario Bros. Movie",
+      "year": 2023,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -17033,6 +17571,8 @@
       "medium": "movie",
       "ja": "もう最終局面だ。",
       "source": "Avengers: Infinity War · 2018 · Gen Z",
+      "title": "Avengers: Infinity War",
+      "year": 2018,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -17104,6 +17644,8 @@
       "medium": "song",
       "ja": "私は悪者よ。",
       "source": "Billie Eilish · 2019 · Gen Z",
+      "title": "Billie Eilish",
+      "year": 2019,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -17181,6 +17723,8 @@
       "medium": "movie",
       "ja": "私たちと一緒には座れないよ。",
       "source": "Mean Girls · 2004 · Millennials",
+      "title": "Mean Girls",
+      "year": 2004,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -17245,6 +17789,8 @@
       "medium": "song",
       "ja": "これは現実？それともただの幻想？",
       "source": "Queen · 1975 · Gen Jones",
+      "title": "Queen",
+      "year": 1975,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -17320,6 +17866,8 @@
       "medium": "movie",
       "ja": "それは信じる一跳びだ。",
       "source": "Spider-Man: Into the Spider-Verse · 2018 · Gen Z",
+      "title": "Spider-Man: Into the Spider-Verse",
+      "year": 2018,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -17384,6 +17932,8 @@
       "medium": "movie",
       "ja": "死んだ人が見える。",
       "source": "The Sixth Sense · 1999 · Millennials",
+      "title": "The Sixth Sense",
+      "year": 1999,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",
@@ -17461,6 +18011,8 @@
       "medium": "movie",
       "ja": "いつもの容疑者を集めろ。",
       "source": "Casablanca · 1942 · Boomers",
+      "title": "Casablanca",
+      "year": 1942,
       "focus": "quick-fire mixed-era lines",
       "keywords": [
         "love",

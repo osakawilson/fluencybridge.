@@ -6,7 +6,10 @@
  *   -> render student view + researcher inspector -> optional TTS playback.
  */
 
-import { getHealth, getScenarios, assessAudio, chatRecast, getSession, unlockSession } from './api.js';
+import {
+  getHealth, getScenarios, assessAudio, chatRecast, getSession, unlockSession,
+  authLogin, authGuest, postInteraction
+} from './api.js';
 import { MicrophoneRecorder, RecordingError } from './recorder.js';
 import { SPEECH_RATE, speak, speakPhoneme, stopSpeaking, warmUpVoices } from './speech.js';
 import {
@@ -16,8 +19,10 @@ import {
 } from './ui.js';
 import { annotateSentence, setVowelLexicon } from './vowels.js';
 import {
-  MEDIUM_TIERS, MEDIUM_META, categoryGroups, categoryIdsForTier, defaultCategoryId,
-  sentencesForSelection, sentenceOptionText, categoryOptionText, sentenceMedium
+  MEDIUM_TIERS, UI_MEDIUM_TIERS, MEDIUM_META, MYSTERY_META, MYSTERY_PLACEHOLDER,
+  GENERATION_WINDOWS, categoryGroups, categoryIdsForTier, defaultCategoryId,
+  sentencesForSelection, sentenceOptionText, categoryOptionText, sentenceMedium,
+  sentenceReleaseLabel, yearBounds, generationWindowLabel, isFullYearSpan
 } from './library.js';
 
 /**
@@ -170,6 +175,30 @@ const dom = {
   exportBtn: $('#exportBtn'),
   sessionId: $('#sessionId'),
   sessionIdText: $('#sessionIdText'),
+  // v1.1.0 participant badge + sign-in modal.
+  userBadge: $('#userBadge'),
+  userBadgeName: $('#userBadgeName'),
+  logoutBtn: $('#logoutBtn'),
+  loginGate: $('#loginGate'),
+  loginForm: $('#loginStudentForm'),
+  loginStudentId: $('#loginStudentId'),
+  loginPin: $('#loginPin'),
+  loginError: $('#loginError'),
+  loginSubmit: $('#loginSubmit'),
+  loginGuestPane: $('#loginGuestPane'),
+  loginGuestBtn: $('#loginGuestBtn'),
+  loginGuestError: $('#loginGuestError'),
+  loginTabs: $$('#loginGate .login-tab'),
+  // v1.1.0 generation window + mystery reveal.
+  yearMin: $('#yearMin'),
+  yearMax: $('#yearMax'),
+  yearTrack: $('#yearTrack'),
+  yearWindowLabel: $('#yearWindowLabel'),
+  yearChips: $$('#yearChips .gen-chip'),
+  summonBtn: $('#summonBtn'),
+  mysteryBadge: $('#mysteryBadge'),
+  mysteryReveal: $('#mysteryReveal'),
+  revealBurst: $('#revealBurst'),
   // Optional passcode gate (server sets ACCESS_CODE).
   accessGate: $('#accessGate'),
   accessGateForm: $('#accessGateForm'),
@@ -189,8 +218,11 @@ const state = {
   scenarios: [], // alias kept for the assessment pipeline
   scenarioId: null,
   // Three-tier picker: medium -> category -> sentence.
-  medium: 'all',
+  medium: 'movie',
   categoryId: 'all',
+  // v1.1.0 generation window (release years); null until the bank is loaded.
+  yearFrom: null,
+  yearTo: null,
   vowelLexiconSize: 0,
   // Where the picker's bank came from: api | static (CDN copy) | stub.
   librarySource: 'api',
@@ -213,7 +245,11 @@ const state = {
   accessGateOpen: false,
   session: null,
   usageStopped: false,
-  usageStop: null
+  usageStop: null,
+  // v1.1.0: { studentId, pseudonym, role } from the LinguaBridge roster/guest.
+  user: null,
+  // v1.1.0 mystery reveal for the CURRENT target only (reset on any change).
+  mystery: { revealed: false, sentenceId: null, message: '' }
 };
 
 let recorder = null;
@@ -232,6 +268,10 @@ async function init() {
 
   // Optional passcode gate: resolves immediately when ACCESS_CODE is unset.
   await ensureAccess();
+
+  // v1.1.0: identify the participant (LinguaBridge roster or guest) before the
+  // first practice call, so every telemetry row carries a real studentId.
+  await ensureIdentity();
 
   const [health, scenarios] = await Promise.allSettled([getHealth({ usage: true }), getScenarios()]);
 
@@ -359,6 +399,192 @@ async function submitAccessCode(event) {
   }
 }
 
+/* ----------------------- participant (LinguaBridge) ---------------------- *
+ * Students keep their LinguaBridge identity: participant ID (LB-xxx) + the
+ * 4-digit PIN from their login card. The session is tab-scoped (sessionStorage)
+ * so closing the tab signs the participant out, and a guest can practise with
+ * one click (server-issued `guest_xxxxxx` id, still logged for research).
+ * ------------------------------------------------------------------------ */
+
+const SESSION_KEY = 'fb_session';
+
+function readStoredUser() {
+  try {
+    const raw = window.sessionStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !parsed.studentId) return null;
+    const role = parsed.role === 'student' ? 'student' : (parsed.role === 'guest' ? 'guest' : null);
+    if (!role) return null;
+    return {
+      studentId: String(parsed.studentId),
+      pseudonym: String(parsed.pseudonym || (role === 'guest' ? 'Guest' : parsed.studentId)),
+      role
+    };
+  } catch (err) {
+    return null;
+  }
+}
+
+function storeUser(user) {
+  try { window.sessionStorage.setItem(SESSION_KEY, JSON.stringify(user)); } catch (err) { /* private mode */ }
+}
+
+function forgetUser() {
+  try { window.sessionStorage.removeItem(SESSION_KEY); } catch (err) { /* ignore */ }
+}
+
+/** `AmberBeacon (LB-001)` or `Guest` in the top bar. */
+function renderUserBadge() {
+  if (!dom.userBadge) return;
+  const user = state.user;
+  dom.userBadge.classList.toggle('hidden', !user);
+  if (!user) return;
+  dom.userBadge.classList.toggle('is-guest', user.role === 'guest');
+  dom.userBadgeName.textContent = user.role === 'guest'
+    ? 'Guest'
+    : `${user.pseudonym} (${user.studentId})`;
+  dom.userBadgeName.title = user.role === 'guest'
+    ? `Guest practice id ${user.studentId}`
+    : `Signed in with LinguaBridge participant ID ${user.studentId}`;
+}
+
+
+let loginResolver = null;
+
+function clearLoginErrors() {
+  dom.loginError.textContent = '';
+  dom.loginError.classList.add('hidden');
+  dom.loginGuestError.textContent = '';
+  dom.loginGuestError.classList.add('hidden');
+}
+
+function setLoginTab(tab) {
+  const guest = tab === 'guest';
+  dom.loginTabs.forEach((button) => {
+    const active = (button.dataset.loginTab === 'guest') === guest;
+    button.classList.toggle('is-active', active);
+    button.setAttribute('aria-selected', String(active));
+  });
+  dom.loginForm.classList.toggle('hidden', guest);
+  dom.loginGuestPane.classList.toggle('hidden', !guest);
+  window.setTimeout(() => {
+    if (guest) dom.loginGuestBtn.focus();
+    else dom.loginStudentId.focus();
+  }, 40);
+}
+
+/** Resolves once a participant (or guest) is signed in. */
+function openLoginGate({ reason = 'required' } = {}) {
+  clearLoginErrors();
+  dom.loginGate.classList.remove('hidden');
+  const subtitle = dom.loginGate.querySelector('.access-gate-sub');
+  if (subtitle) {
+    subtitle.textContent = reason === 'switch'
+      ? 'Signed out. Use another participant ID and PIN, or continue as a guest.'
+      : 'Use the participant ID and 4-digit PIN from your LinguaBridge login card, or practise as a guest.';
+  }
+  setLoginTab('student');
+  return new Promise((resolve) => { loginResolver = resolve; });
+}
+
+function closeLoginGate() {
+  dom.loginGate.classList.add('hidden');
+  dom.loginPin.value = '';
+  const resolve = loginResolver;
+  loginResolver = null;
+  if (resolve) resolve(true);
+}
+
+function completeLogin(user, note) {
+  state.user = {
+    studentId: String(user.studentId),
+    pseudonym: String(user.pseudonym || (user.role === 'guest' ? 'Guest' : user.studentId)),
+    role: user.role === 'guest' ? 'guest' : 'student'
+  };
+  storeUser(state.user);
+  renderUserBadge();
+  closeLoginGate();
+  toast(note, 'ok', 3200);
+}
+
+async function submitLogin(event) {
+  event.preventDefault();
+  const studentId = dom.loginStudentId.value.trim().toUpperCase();
+  const pin = dom.loginPin.value.trim();
+  clearLoginErrors();
+  if (!/^LB-[0-9]{1,4}$/.test(studentId)) {
+    dom.loginError.textContent = 'Enter the participant ID from your login card, e.g. LB-001.';
+    dom.loginError.classList.remove('hidden');
+    dom.loginStudentId.focus();
+    return;
+  }
+  if (!/^[0-9]{4}$/.test(pin)) {
+    dom.loginError.textContent = 'The PIN is the 4 digits printed under your participant ID.';
+    dom.loginError.classList.remove('hidden');
+    dom.loginPin.focus();
+    return;
+  }
+  dom.loginSubmit.disabled = true;
+  try {
+    const user = await authLogin({ studentId, pin });
+    completeLogin(user, `Signed in as ${user.pseudonym} (${user.studentId}).`);
+  } catch (err) {
+    dom.loginError.textContent = err.code === 'invalid_credentials'
+      ? 'That participant ID and PIN do not match the LinguaBridge roster.'
+      : (err.code === 'roster_unavailable'
+        ? 'The roster is not loaded on this server yet (set STUDENT_ROSTER_JSON or data/students.json).'
+        : (err.status === 429
+          ? 'Too many attempts. Wait a few minutes and try again.'
+          : (err.message || 'Sign-in failed.')));
+    dom.loginError.classList.remove('hidden');
+    dom.loginPin.select();
+  } finally {
+    dom.loginSubmit.disabled = false;
+  }
+}
+
+async function loginAsGuest() {
+  clearLoginErrors();
+  dom.loginGuestBtn.disabled = true;
+  try {
+    const user = await authGuest();
+    completeLogin(user, 'Practising as a guest — try the mystery line and reveal it!');
+  } catch (err) {
+    dom.loginGuestError.textContent = err.status === 429
+      ? 'Too many guest sign-ins from this network. Try again in a minute.'
+      : (err.message || 'Guest sign-in failed.');
+    dom.loginGuestError.classList.remove('hidden');
+  } finally {
+    dom.loginGuestBtn.disabled = false;
+  }
+}
+
+/** Boot: restore the tab session, or block on the login modal. */
+async function ensureIdentity() {
+  const stored = readStoredUser();
+  if (stored) {
+    state.user = stored;
+    renderUserBadge();
+    return true;
+  }
+  renderUserBadge();
+  return openLoginGate({ reason: 'required' });
+}
+
+/** "Switch / Logout": forgets this tab and re-opens the login modal. */
+async function switchParticipant() {
+  forgetUser();
+  state.user = null;
+  state.assess = null;
+  state.chat = null;
+  state.history = [];
+  renderUserBadge();
+  dom.loginStudentId.value = '';
+  dom.loginPin.value = '';
+  await openLoginGate({ reason: 'switch' });
+}
+
 /* --------------------------- daily usage quota --------------------------- *
  * The server counts a student's daily practice calls and the site-wide Azure
  * budget. Both limits arrive as 429/503 payloads which api.js re-broadcasts as
@@ -484,61 +710,170 @@ function applyLibrary(payload) {
   // Lexical vowel table (Houston -> /juː/, latte -> /ɑː/, ...). Must be installed
   // before the first render so Vowel Practice never guesses from spelling.
   state.vowelLexiconSize = setVowelLexicon(payload.vowels);
-  state.medium = 'all';
+  // v1.1.0: movies + songs only, generation window at the full release span.
+  state.medium = 'movie';
   state.categoryId = 'all';
+  const bounds = yearBounds(sentences);
+  state.yearFrom = bounds.min;
+  state.yearTo = bounds.max;
+  syncYearControls();
   populateCategories();
-  populateSentences(payload.default || sentences[0].id);
+  populateSentences(null);
 }
 
-/** Level 1 -> Level 2: keeps the current category when it survives the tier. */
+/**
+ * The sentences the current media + generation window can offer. Category is
+ * applied on top of this pool, so Level-2 counts stay honest ("Boomer: 3").
+ */
+function libraryPool() {
+  return sentencesForSelection(state.sentences, {
+    tier: state.medium,
+    categoryId: 'all',
+    yearFrom: state.yearFrom,
+    yearTo: state.yearTo
+  });
+}
+
+/* -------------------------- generation window ---------------------------- *
+ * Two synchronized range inputs (the spec's dual slider). The window filters
+ * every level below it: category counts, the sentence dropdown and the
+ * "Summon Mystery Line" pool. `input` only repaints the track; `change`
+ * refreshes the library so dragging stays smooth.
+ * ------------------------------------------------------------------------ */
+
+function syncYearControls() {
+  const bounds = yearBounds(state.sentences);
+  [dom.yearMin, dom.yearMax].forEach((input) => {
+    if (!input) return;
+    input.min = String(bounds.min);
+    input.max = String(bounds.max);
+  });
+  // Cohort chips borrow their tooltip from the shared window table.
+  dom.yearChips.forEach((chip) => {
+    const window = GENERATION_WINDOWS.find((entry) => entry.from === Number(chip.dataset.from)
+      && entry.to === Number(chip.dataset.to));
+    if (window) chip.title = `${window.label} (${window.from}–${window.to}) · ${window.tip}`;
+  });
+  const from = Number.isFinite(Number(state.yearFrom)) ? Number(state.yearFrom) : bounds.min;
+  const to = Number.isFinite(Number(state.yearTo)) ? Number(state.yearTo) : bounds.max;
+  state.yearFrom = Math.max(bounds.min, Math.min(from, bounds.max));
+  state.yearTo = Math.max(state.yearFrom, Math.min(to, bounds.max));
+  if (dom.yearMin) dom.yearMin.value = String(state.yearFrom);
+  if (dom.yearMax) dom.yearMax.value = String(state.yearTo);
+  paintYearWindow();
+}
+
+function paintYearWindow() {
+  const bounds = yearBounds(state.sentences);
+  const span = Math.max(1, bounds.max - bounds.min);
+  const fromPct = ((state.yearFrom - bounds.min) / span) * 100;
+  const toPct = ((state.yearTo - bounds.min) / span) * 100;
+  if (dom.yearTrack) {
+    dom.yearTrack.style.setProperty('--from', `${fromPct}%`);
+    dom.yearTrack.style.setProperty('--to', `${toPct}%`);
+  }
+  if (dom.yearWindowLabel) {
+    dom.yearWindowLabel.textContent = isFullYearSpan(state.yearFrom, state.yearTo, state.sentences)
+      ? `${bounds.min}–${bounds.max} · All eras`
+      : generationWindowLabel(state.yearFrom, state.yearTo);
+  }
+  dom.yearChips.forEach((chip) => {
+    chip.classList.toggle('is-active',
+      Number(chip.dataset.from) === state.yearFrom && Number(chip.dataset.to) === state.yearTo);
+  });
+}
+
+/** Applies a window (slider release or a cohort chip) and refreshes the bank. */
+function setYearWindow(from, to, { announce = false } = {}) {
+  const bounds = yearBounds(state.sentences);
+  let low = Math.max(bounds.min, Math.min(Number(from) || bounds.min, bounds.max));
+  let high = Math.max(bounds.min, Math.min(Number(to) || bounds.max, bounds.max));
+  if (low > high) [low, high] = [high, low];
+  if (low === state.yearFrom && high === state.yearTo) {
+    paintYearWindow();
+    return;
+  }
+  state.yearFrom = low;
+  state.yearTo = high;
+  state.chat = null;
+  state.history = [];
+  syncYearControls();
+  populateCategories();
+  populateSentences(state.scenarioId);
+  if (announce) {
+    toast(`Generation window: ${generationWindowLabel(low, high)} · ${libraryPool().length} line(s)`,
+      'info', 2600);
+  }
+}
+
+/** Slider `change`: keeps a 1-year gap and never lets the thumbs cross. */
+function handleYearInput(which) {
+  const bounds = yearBounds(state.sentences);
+  let low = Number(dom.yearMin.value);
+  let high = Number(dom.yearMax.value);
+  if (which === 'min' && low > high - 1) {
+    low = Math.max(bounds.min, high - 1);
+    dom.yearMin.value = String(low);
+  }
+  if (which === 'max' && high < low + 1) {
+    high = Math.min(bounds.max, low + 1);
+    dom.yearMax.value = String(high);
+  }
+  state.yearFrom = low;
+  state.yearTo = high;
+  paintYearWindow();
+}
+
 function setMedium(medium) {
-  if (!MEDIUM_TIERS.some((tier) => tier.id === medium) || medium === state.medium) return;
+  // v1.1.0 exposes Movies and Songs only; scenarios stay in the data bank for
+  // the API/assess pipeline but are not selectable in this release.
+  if (!UI_MEDIUM_TIERS.some((tier) => tier.id === medium) || medium === state.medium) return;
   state.medium = medium;
   if (medium === 'all') state.categoryId = 'all';
   normalizeCategorySelection();
   state.chat = null;
   state.history = [];
+  state.mystery = { revealed: false, sentenceId: null, message: '' };
   populateCategories();
   populateSentences(null);
 }
 
-/** Guarantees `state.categoryId` exists in the Level-2 list for the tier. */
+/** Guarantees `state.categoryId` points at a selectable Level-3 option. */
 function normalizeCategorySelection() {
   const available = categoryIdsForTier(state.medium, state.categories);
-  if (state.medium === 'all') {
-    if (state.categoryId !== 'all' && !available.includes(state.categoryId)) state.categoryId = 'all';
-    return;
-  }
-  if (state.categoryId === 'all' || !available.includes(state.categoryId)) {
+  // "All categories" is a valid Level-3 option for every tier: with the v1.1.0
+  // generation window it means "the whole media bank inside this era range".
+  if (state.categoryId === 'all') return;
+  if (!available.includes(state.categoryId)) {
     state.categoryId = defaultCategoryId(state.medium, state.categories);
   }
 }
 
-/** Level 2 dropdown: only the categories that belong to the selected medium. */
+/** Level 3 dropdown: only the categories that belong to the selected medium. */
 function populateCategories() {
   normalizeCategorySelection();
 
+  const inWindow = libraryPool();
   clear(dom.categorySelect);
-  if (state.medium === 'all') {
-    dom.categorySelect.appendChild(el('option', {
-      value: 'all',
-      text: categoryOptionText({
-        id: 'all', label: 'All categories', sentenceCount: state.sentences.length
-      })
-    }));
-  }
+  // Always offer "All categories" (counted inside the active generation window)
+  // so the default pool is the full Movies/Songs bank, not one cohort.
+  dom.categorySelect.appendChild(el('option', {
+    value: 'all',
+    text: categoryOptionText({
+      id: 'all', label: 'All categories', sentenceCount: inWindow.length
+    })
+  }));
   categoryGroups(state.medium, state.categories).forEach((group) => {
     const optgroup = el('optgroup', { label: group.label });
     group.categories.forEach((category) => {
-      // Count only what this tier can actually offer (e.g. Boomers has 4 films).
-      const tierCount = sentencesForSelection(state.sentences, {
-        tier: state.medium,
-        categoryId: category.id
-      }).length;
-      optgroup.appendChild(el('option', {
+      // Count only what this tier + generation window can actually offer.
+      const tierCount = inWindow.filter((sentence) => sentence.category === category.id).length;
+      const option = el('option', {
         value: category.id,
         text: categoryOptionText(category, tierCount)
-      }));
+      });
+      if (!tierCount) option.disabled = true;
+      optgroup.appendChild(option);
     });
     dom.categorySelect.appendChild(optgroup);
   });
@@ -552,22 +887,29 @@ function populateCategories() {
   });
 }
 
-/** Level 3 dropdown: medium AND category must both match. */
+/** Level 4 dropdown: medium + generation window + category must all match. */
 function populateSentences(preferredId) {
-  const pool = sentencesForSelection(state.sentences, { tier: state.medium, categoryId: state.categoryId });
+  const windowPool = libraryPool();
+  const pool = state.categoryId === 'all'
+    ? windowPool
+    : windowPool.filter((sentence) => sentence.category === state.categoryId);
   clear(dom.sentenceSelect);
 
   if (!pool.length) {
     dom.sentenceSelect.disabled = true;
-    dom.sentenceSelect.appendChild(el('option', { value: '', text: 'No sentences in this filter' }));
+    dom.sentenceSelect.appendChild(el('option', { value: '', text: 'No lines in this generation window' }));
     dom.sentenceSelect.value = '';
+    if (dom.summonBtn) dom.summonBtn.disabled = true;
+    renderScenario();
     return;
   }
   dom.sentenceSelect.disabled = false;
+  if (dom.summonBtn) dom.summonBtn.disabled = false;
 
+  // The dropdown never leaks the work/artist: the reveal happens after scoring.
   const addOption = (sentence, parent) => parent.appendChild(el('option', {
     value: sentence.id,
-    text: sentenceOptionText(sentence, state.categories)
+    text: sentenceOptionText(sentence, state.categories, { mystery: true })
   }));
 
   if (state.categoryId === 'all') {
@@ -594,11 +936,37 @@ function populateSentences(preferredId) {
   renderScenario();
 }
 
+/** "🎲 Summon Mystery Line": random target in the active media + window. */
+function summonMysteryLine() {
+  const pool = state.categoryId === 'all'
+    ? libraryPool()
+    : libraryPool().filter((sentence) => sentence.category === state.categoryId);
+  if (!pool.length) {
+    toast('No lines in this generation window — widen the era slider.', 'warn', 3200);
+    return;
+  }
+  let pick = pool[Math.floor(Math.random() * pool.length)];
+  if (pool.length > 1 && pick.id === state.scenarioId) {
+    const index = pool.findIndex((sentence) => sentence.id === pick.id);
+    pick = pool[(index + 1) % pool.length];
+  }
+  state.chat = null;
+  state.history = [];
+  populateSentences(pick.id);
+  clearTurnView();
+  dom.micStatus.textContent = 'Mystery line summoned — read it aloud to decode it';
+  toast('🎲 Mystery line summoned. Score 80+ to reveal the title!', 'info', 3200);
+}
+
 function renderScenario() {
   const sentence = currentScenario();
   state.scenarioId = sentence.id;
   // A new target starts with the translation hidden so learners read English first.
   state.showTranslation = false;
+  // ...and with its title hidden again (the mystery is per attempt).
+  if (!state.mystery || state.mystery.sentenceId !== sentence.id) {
+    state.mystery = { revealed: false, sentenceId: sentence.id, message: '' };
+  }
   if (dom.sentenceSelect.value !== sentence.id) dom.sentenceSelect.value = sentence.id;
 
   const category = state.categories.find((entry) => entry.id === sentence.category);
@@ -609,13 +977,137 @@ function renderScenario() {
     sentence.categoryLabel || (category && category.label),
     sentence.focus
   ].filter(Boolean).join(' · ');
-  dom.practiceMeta.textContent = sentence.source
+  dom.practiceMeta.textContent = state.mystery.revealed && sentence.source
     ? `${sentence.categoryLabel} · ${sentence.source}`
-    : `${sentence.emoji || ''} ${sentence.categoryLabel || ''}`.trim();
+    : `${mediumMeta.emoji} ${mediumMeta.label} · ${MYSTERY_META[medium] ? MYSTERY_META[medium].label : 'Mystery'}`;
   dom.practiceMeta.title = sentence.groupLabel || '';
 
+  renderMystery(sentence);
   renderModelSentence();
   if (!state.chat) renderChips(sentence.starters || []);
+}
+
+/* ----------------------------- mystery reveal ---------------------------- *
+ * The work/artist is hidden until the learner earns it: accuracy >= 80 (or an
+ * overall score >= 80) flips the card to "🎉 Decoded!" and shows the release
+ * year. Below 80 the title stays hidden and the card asks for another take.
+ * ------------------------------------------------------------------------ */
+
+const MYSTERY_THRESHOLD = 80;
+
+function mysteryMetaFor(sentence) {
+  const medium = sentenceMedium(sentence);
+  return MYSTERY_META[medium] || MYSTERY_META.movie;
+}
+
+/** Paints the placeholder badge or the decoded title + year. */
+function renderMystery(sentence) {
+  if (!dom.mysteryBadge || !sentence) return;
+  const meta = mysteryMetaFor(sentence);
+  const revealed = Boolean(state.mystery && state.mystery.revealed);
+  dom.mysteryBadge.textContent = `${meta.emoji} ${MYSTERY_PLACEHOLDER} (${meta.label})`;
+  dom.mysteryBadge.classList.toggle('hidden', revealed);
+  dom.modelSentenceCard.classList.toggle('is-decoded', revealed);
+  clear(dom.mysteryReveal);
+  dom.mysteryReveal.classList.toggle('hidden', !revealed && !(state.mystery && state.mystery.message));
+
+  if (revealed) {
+    dom.mysteryReveal.append(
+      el('span', { class: 'decoded-badge', text: '🎉 Decoded!' }),
+      el('strong', { class: 'mystery-title', text: `${meta.emoji} ${sentenceReleaseLabel(sentence)}` })
+    );
+    return;
+  }
+  if (state.mystery && state.mystery.message) {
+    dom.mysteryReveal.appendChild(el('span', { class: 'mini-badge', text: state.mystery.message }));
+  }
+}
+
+/** Calibrated word accuracy (falls back to Azure's raw accuracy). */
+function accuracyOf(assess) {
+  const calibrated = Number(assess && assess.calibrated_accuracy_score);
+  if (Number.isFinite(calibrated)) return calibrated;
+  const raw = Number(assess && assess.accuracy_score);
+  return Number.isFinite(raw) ? raw : null;
+}
+
+/** Azure pronunciation score, or the mean of the available sub-scores. */
+function overallOf(assess) {
+  const pronunciation = Number(assess && assess.pronunciation_score);
+  if (Number.isFinite(pronunciation)) return pronunciation;
+  const parts = [accuracyOf(assess), Number(assess && assess.fluency_score), Number(assess && assess.completeness_score)]
+    .filter((value) => Number.isFinite(value));
+  if (!parts.length) return null;
+  return parts.reduce((sum, value) => sum + value, 0) / parts.length;
+}
+
+function burstConfetti() {
+  if (!dom.revealBurst) return;
+  clear(dom.revealBurst);
+  const colors = ['#6366f1', '#0ea5e9', '#22c55e', '#f59e0b', '#ef4444', '#ec4899'];
+  for (let index = 0; index < 26; index += 1) {
+    const piece = el('span');
+    piece.style.left = `${4 + Math.random() * 92}%`;
+    piece.style.background = colors[index % colors.length];
+    piece.style.animationDelay = `${(Math.random() * 0.35).toFixed(2)}s`;
+    piece.style.setProperty('--drift', `${((Math.random() - 0.5) * 90).toFixed(0)}px`);
+    dom.revealBurst.appendChild(piece);
+  }
+  window.setTimeout(() => clear(dom.revealBurst), 2200);
+}
+
+function celebrateReveal(sentence, { accuracy, overall }) {
+  const meta = mysteryMetaFor(sentence);
+  dom.modelSentenceCard.classList.remove('is-celebrating');
+  void dom.modelSentenceCard.offsetWidth; // restart the glow animation
+  dom.modelSentenceCard.classList.add('is-celebrating');
+  window.setTimeout(() => dom.modelSentenceCard.classList.remove('is-celebrating'), 1600);
+  burstConfetti();
+  const score = Number.isFinite(accuracy) ? accuracy : overall;
+  toast(`🎉 Decoded! ${meta.emoji} ${sentenceReleaseLabel(sentence)}`
+    + `${Number.isFinite(score) ? ` — accuracy ${Math.round(score)}` : ''}`, 'ok', 5600);
+}
+
+/** Applies the 80% gate to a finished assessment (called from runPipeline). */
+function applyMysteryOutcome(sentence, assess) {
+  const accuracy = accuracyOf(assess);
+  const overall = overallOf(assess);
+  const best = Math.max(
+    Number.isFinite(accuracy) ? accuracy : 0,
+    Number.isFinite(overall) ? overall : 0
+  );
+  const passed = Boolean(assess && assess.ok) && best >= MYSTERY_THRESHOLD;
+  state.mystery = {
+    revealed: passed,
+    sentenceId: sentence.id,
+    message: passed
+      ? ''
+      : `Not decoded yet — ${Number.isFinite(accuracy)
+        ? `accuracy ${Math.round(accuracy)} (needs ${MYSTERY_THRESHOLD}+)`
+        : 'no accuracy score yet'}. Try the line again!`
+  };
+  renderMystery(sentence);
+  if (passed) celebrateReveal(sentence, { accuracy, overall });
+  return { revealed: passed, accuracy, overall };
+}
+
+/** One telemetry row per scored turn (fire-and-forget; never blocks the UI). */
+function dispatchInteraction(sentence, assess, revealed) {
+  const user = state.user;
+  if (!user || !assess || !assess.ok) return;
+  postInteraction({
+    studentId: user.studentId,
+    pseudonym: user.pseudonym,
+    role: user.role,
+    targetId: sentence.id,
+    medium: sentenceMedium(sentence),
+    sentence: sentence.referenceText || sentence.text || '',
+    overallScore: overallOf(assess),
+    accuracyScore: accuracyOf(assess),
+    fluencyScore: assess.fluency_score,
+    completenessScore: assess.completeness_score,
+    revealed
+  }).catch((err) => console.warn('[telemetry] interaction not stored:', err.message));
 }
 
 const SCORING_MODE_COPY = {
@@ -841,6 +1333,12 @@ async function runPipeline(captured) {
   state.lastRecMeta = captured;
   updateKpi('azure', assessMs, 'Upload + Azure Pronunciation Assessment round-trip (client-measured)');
   renderAssessment(assess, captured);
+
+  // v1.1.0: decode the mystery line (accuracy/overall >= 80) and log the turn.
+  if (assess.ok) {
+    const mystery = applyMysteryOutcome(scenario, assess);
+    dispatchInteraction(scenario, assess, mystery.revealed);
+  }
 
   if (!assess.ok) {
     state.busy = false;
@@ -1834,6 +2332,15 @@ function resetTurn() {
     toast('Wait for the current turn to finish before resetting.', 'warn', 3000);
     return;
   }
+  clearTurnView();
+  toast('Turn cleared — the session log is preserved for export.', 'info', 2800);
+}
+
+/**
+ * Clears the current take (audio, scores, recast, inspector panels) without
+ * touching the session log. Shared by "Reset turn" and "Summon Mystery Line".
+ */
+function clearTurnView() {
   if (recorder && recorder.isRecording) recorder.cancel();
   stopSpeaking();
   setPlayback(null);
@@ -1854,7 +2361,6 @@ function resetTurn() {
   clear(dom.tabRecast).appendChild(emptyPanel('🧠', 'Record a turn to receive the DeepSeek pedagogical recast.'));
   clear(dom.tabRaw).appendChild(emptyPanel('{ }', 'Record a turn to capture request/response payloads and the latency log.'));
   renderChips(currentScenario().starters || []);
-  toast('Turn cleared — the session log is preserved for export.', 'info', 2800);
 }
 
 /* --------------------------------- export -------------------------------- */
@@ -1862,12 +2368,16 @@ function resetTurn() {
 function exportSession() {
   const payload = {
     app: 'FluencyBridge Inspector PoC',
-    export_version: 1,
+    app_version: (state.health && state.health.app_version) || '1.1.0',
+    export_version: 2,
     session_id: state.sessionId,
     exported_at: new Date().toISOString(),
+    participant: state.user,
     providers: state.health ? state.health.providers : null,
     server_limits: state.health ? state.health.limits : null,
     scenario: state.scenarioId,
+    generation_window: { from: state.yearFrom, to: state.yearTo },
+    mystery: { revealed: state.mystery.revealed, sentence_id: state.mystery.sentenceId },
     library_source: state.librarySource,
     library_size: state.sentences.length,
     scripted_mode: state.scripted,
@@ -1971,6 +2481,26 @@ function showAnalyzing() {
 function wireEvents() {
   dom.micBtn.addEventListener('click', toggleRecording);
   dom.resetBtn.addEventListener('click', resetTurn);
+  // v1.1.0 identity: roster sign-in, one-click guest, and Switch / Logout.
+  dom.loginForm.addEventListener('submit', submitLogin);
+  dom.loginGuestBtn.addEventListener('click', loginAsGuest);
+  dom.loginTabs.forEach((tab) => {
+    tab.addEventListener('click', () => setLoginTab(tab.dataset.loginTab));
+  });
+  dom.logoutBtn.addEventListener('click', switchParticipant);
+  // v1.1.0 practice picker: generation window + summon.
+  if (dom.yearMin) {
+    dom.yearMin.addEventListener('input', () => handleYearInput('min'));
+    dom.yearMin.addEventListener('change', () => setYearWindow(state.yearFrom, state.yearTo, { announce: true }));
+  }
+  if (dom.yearMax) {
+    dom.yearMax.addEventListener('input', () => handleYearInput('max'));
+    dom.yearMax.addEventListener('change', () => setYearWindow(state.yearFrom, state.yearTo, { announce: true }));
+  }
+  dom.yearChips.forEach((chip) => {
+    chip.addEventListener('click', () => setYearWindow(Number(chip.dataset.from), Number(chip.dataset.to), { announce: true }));
+  });
+  dom.summonBtn.addEventListener('click', summonMysteryLine);
   dom.playModelBtn.addEventListener('click', playModelSentence);
   dom.translateBtn.addEventListener('click', () => {
     state.showTranslation = !state.showTranslation;

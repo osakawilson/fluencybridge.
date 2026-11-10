@@ -1,0 +1,6 @@
+{
+  "_comment": "Template for data/students.json (gitignored). Copy this file, replace the entries with the real LinguaBridge roster, and never commit the result. On Netlify inject the same JSON as the STUDENT_ROSTER_JSON environment variable instead.",
+  "LB-001": { "name": "AmberBeacon", "pin": "1887" },
+  "LB-002": { "name": "AmberEagle", "pin": "2612" },
+  "LB-003": { "name": "AmberHawk", "pin": "1993" }
+}

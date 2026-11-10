@@ -8,3 +8,10 @@ npm-debug.log*
 .DS_Store
 .netlify/
 research-export-*.json
+
+# v1.1.0: the LinguaBridge participant roster (real PINs) and the research
+# interaction log are machine-local. `data/.students.example.json` is the
+# tracked template; production injects the roster via STUDENT_ROSTER_JSON.
+data/students.json
+data/interactions.json
+data/interactions.json.*

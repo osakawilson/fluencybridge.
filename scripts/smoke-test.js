@@ -9,6 +9,8 @@
  */
 
 const BASE = process.argv[2] || process.env.BASE_URL || 'http://localhost:3000';
+const fs = require('node:fs');
+const path = require('node:path');
 // The verified size of the practice bank (src/scenarios.js): the API must never
 // serve a trimmed subset, and the CDN copy (public/scenarios.json) mirrors it.
 const EXPECTED_TARGETS = require('../src/scenarios').SENTENCES.length;
@@ -64,6 +66,78 @@ async function postJson(path, body) {
   const health = await fetch(`${BASE}/api/health`).then((r) => r.json());
   const azureLive = Boolean(health.providers.azure.live);
   check('GET /api/health', health.ok === true, `azure=${azureLive ? 'live' : 'mock'} deepseek=${health.providers.deepseek.live ? 'live' : 'mock'}`);
+  check('GET /api/health reports v1.1.0 + roster/telemetry posture',
+    health.app_version === '1.1.0' && health.auth && health.auth.guest_enabled === true
+      && health.telemetry && health.telemetry.store_name === 'fluency_interactions',
+    `${health.app_version} · roster ${health.auth && health.auth.size} (${health.auth && health.auth.source}) · ${health.telemetry && health.telemetry.interactions_store}`);
+
+  /* v1.1.0: LinguaBridge roster sign-in and one-click guest mode. */
+  const guest = await postJson('/api/auth/guest', {});
+  check('POST /api/auth/guest issues a guest id',
+    guest.status === 200 && guest.data.ok === true && /^guest_[A-Za-z0-9]{6}$/.test(guest.data.studentId)
+      && guest.data.pseudonym === 'Guest' && guest.data.role === 'guest',
+    `${guest.status} ${guest.data && guest.data.studentId}`);
+  const noPin = await postJson('/api/auth/login', { studentId: 'LB-001' });
+  check('POST /api/auth/login requires the ID and PIN',
+    noPin.status === 400 && noPin.data.error === 'missing_credentials', `${noPin.status} ${noPin.data && noPin.data.error}`);
+  const wrongPin = await postJson('/api/auth/login', { studentId: 'LB-001', pin: '0000' });
+  check('POST /api/auth/login refuses a wrong PIN (401, or 503 without a roster)',
+    (wrongPin.status === 401 && wrongPin.data.error === 'invalid_credentials')
+      || (wrongPin.status === 503 && wrongPin.data.error === 'roster_unavailable'),
+    `${wrongPin.status} ${wrongPin.data && wrongPin.data.error}`);
+  const rosterFile = path.join(__dirname, '..', 'data', 'students.json');
+  if (fs.existsSync(rosterFile)) {
+    const sample = Object.entries(JSON.parse(fs.readFileSync(rosterFile, 'utf8')))[0];
+    const login = await postJson('/api/auth/login', { studentId: sample[0].toLowerCase(), pin: sample[1].pin });
+    check('POST /api/auth/login accepts a real roster card (case-insensitive ID)',
+      login.status === 200 && login.data.ok === true
+        && login.data.studentId === sample[0] && login.data.pseudonym === sample[1].name
+        && login.data.role === 'student',
+      `${login.status} ${login.data && login.data.studentId} ${login.data && login.data.pseudonym}`);
+  } else {
+    check('POST /api/auth/login explains a missing roster (503)',
+      wrongPin.status === 503 && wrongPin.data.error === 'roster_unavailable',
+      'data/students.json is gitignored — create it or set STUDENT_ROSTER_JSON');
+  }
+
+  /* v1.1.0: interaction telemetry + Google Sheets CSV export. */
+  const interaction = await postJson('/api/interactions', {
+    studentId: 'LB-001',
+    pseudonym: 'AmberBeacon',
+    role: 'student',
+    targetId: 'gen-z-1',
+    medium: 'movie',
+    sentence: 'I am inevitable.',
+    overallScore: 91,
+    accuracyScore: 88,
+    fluencyScore: 82,
+    completenessScore: 100,
+    revealed: true
+  });
+  check('POST /api/interactions stores a scored turn',
+    interaction.status === 201 && interaction.data.ok === true
+      && /^int_\d+_[a-z0-9]+$/.test(interaction.data.id)
+      && interaction.data.record.app_version === '1.1.0'
+      && interaction.data.record.revealed === true,
+    `${interaction.status} ${interaction.data && interaction.data.id} (${interaction.data && interaction.data.stored})`);
+
+  const exportRes = await fetch(`${BASE}/api/admin/export-csv`);
+  const exportCsv = await exportRes.text();
+  check('GET /api/admin/export-csv exports the log as CSV',
+    exportRes.status === 200
+      && String(exportRes.headers.get('content-type') || '').includes('text/csv')
+      && exportCsv.startsWith('id,timestamp,app_version,studentId,pseudonym,role,targetId,medium,sentence')
+      && exportCsv.includes(interaction.data.id),
+    `${exportRes.status} · ${exportCsv.split('\n').length - 1} row(s)`);
+
+  if (/localhost|127\.0\.0\.1/.test(BASE)) {
+    const logFile = path.join(__dirname, '..', 'data', 'interactions.json');
+    let log = [];
+    try { log = JSON.parse(fs.readFileSync(logFile, 'utf8')); } catch (err) { log = []; }
+    check('local dev appends the record to data/interactions.json',
+      Array.isArray(log) && log.some((entry) => entry.id === interaction.data.id),
+      `${logFile} · ${Array.isArray(log) ? log.length : 0} record(s)`);
+  }
 
   const scenarios = await fetch(`${BASE}/api/scenarios`).then((r) => r.json());
   const DEFAULT_ID = scenarios.default;
@@ -106,6 +180,10 @@ async function postJson(path, body) {
     `${scenarios.scenarios.filter((s) => s.ja).length}/${scenarios.scenarios.length}`);
   check('every target ships word-level vowel alignment',
     scenarios.scenarios.every((s) => s.wordVowels && typeof s.wordVowels === 'object'));
+  check('every movie/song target ships hidden reveal metadata (year + title)',
+    scenarios.scenarios.filter((s) => s.medium !== 'scenario')
+      .every((s) => Number.isFinite(s.year) && typeof s.title === 'string' && s.title.length > 0),
+    `${scenarios.scenarios.filter((s) => Number.isFinite(s.year)).length} dated targets`);
   const houston = scenarios.scenarios.find((s) => s.text.includes('Houston'));
   const houstonVowels = (houston && houston.wordVowels && houston.wordVowels.houston) || [];
   check('vowel lexicon aligns "Houston" ou -> /juː/',

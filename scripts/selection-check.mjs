@@ -18,8 +18,10 @@ const { CATEGORIES, SENTENCES } = libraryModule;
 const source = await readFile(new URL('../public/js/library.js', import.meta.url), 'utf8');
 const ui = await import(`data:text/javascript;base64,${Buffer.from(source, 'utf8').toString('base64')}`);
 const {
-  MEDIUM_TIERS, categoryGroups, categoryIdsForTier, defaultCategoryId,
-  sentencesForSelection, sentenceOptionText, categoryOptionText, sentenceMedium
+  MEDIUM_TIERS, UI_MEDIUM_TIERS, GENERATION_WINDOWS, categoryGroups, categoryIdsForTier,
+  defaultCategoryId, sentencesForSelection, sentenceOptionText, categoryOptionText,
+  sentenceMedium, sentenceYear, sentenceTitle, sentenceReleaseLabel, yearBounds,
+  generationWindowLabel, generationWindowsForRange, mysteryOptionText, sentencesInYearWindow
 } = ui;
 
 let failures = 0;
@@ -138,7 +140,60 @@ check('medium totals add up to the whole library',
   tiers.slice(1).reduce((sum, tier) => sum + sentencesForSelection(SENTENCES, { tier, categoryId: 'all' }).length, 0)
   === SENTENCES.length, totals.join(' '));
 
-/* 7. The CDN copy shipped with the site carries the SAME complete bank. */
+/* 7. v1.1.0: Movies + Songs only, generation windows and mystery metadata. */
+check('the UI exposes Movies and Songs only (scenarios hidden in 1.1.0)',
+  UI_MEDIUM_TIERS.map((tier) => tier.id).join(',') === 'movie,song',
+  UI_MEDIUM_TIERS.map((tier) => tier.id).join(','));
+check('the four spec cohorts are Boomer 1960–1979 / Gen X 1980–1995 / '
+  + 'Millennial 1996–2010 / Gen Z 2011–2025',
+  GENERATION_WINDOWS.map((window) => `${window.label}:${window.from}-${window.to}`).join('|')
+  === 'Boomer:1960-1979|Gen X:1980-1995|Millennial:1996-2010|Gen Z:2011-2025',
+  GENERATION_WINDOWS.map((window) => `${window.label} ${window.from}-${window.to}`).join(' | '));
+
+const quotes = SENTENCES.filter((sentence) => sentenceMedium(sentence) !== 'scenario');
+const missingYears = quotes.filter((sentence) => !Number.isFinite(sentenceYear(sentence)));
+check('every movie/song target carries a release year', missingYears.length === 0,
+  missingYears.slice(0, 4).map((sentence) => sentence.id).join(', '));
+const missingTitles = quotes.filter((sentence) => !sentenceTitle(sentence));
+check('every movie/song target carries a hidden work/artist title', missingTitles.length === 0,
+  missingTitles.slice(0, 4).map((sentence) => sentence.id).join(', '));
+
+const bounds = yearBounds(SENTENCES);
+check('the generation slider span covers the bank', bounds.min === 1939 && bounds.max === 2023,
+  `${bounds.min}–${bounds.max}`);
+
+const boomerPop = sentencesForSelection(quotes, { tier: 'song', yearFrom: 1960, yearTo: 1979 });
+check('a generation window filters by medium AND release year',
+  boomerPop.length > 0 && boomerPop.every((sentence) => sentenceMedium(sentence) === 'song'
+    && sentenceYear(sentence) >= 1960 && sentenceYear(sentence) <= 1979),
+  `${boomerPop.length} Boomer songs`);
+const genZAll = sentencesInYearWindow(quotes, 2011, 2025);
+check('Gen Z window (2011–2025) has targets in both media',
+  genZAll.some((sentence) => sentenceMedium(sentence) === 'movie')
+  && genZAll.some((sentence) => sentenceMedium(sentence) === 'song'),
+  `${genZAll.length} lines`);
+check('generation labels name every overlapping cohort',
+  generationWindowLabel(1960, 1995) === '1960–1995 · Boomer · Gen X'
+  && generationWindowsForRange(2011, 2025).map((window) => window.id).join(',') === 'gen-z',
+  generationWindowLabel(1960, 1995));
+
+const sampleQuote = sample('gen-z-1');
+const mystery = mysteryOptionText(sampleQuote);
+const plain = sentenceOptionText(sampleQuote, CATEGORIES);
+check('the mystery label hides the title before scoring',
+  mystery === `🎬 [Mystery Movie] "${sampleQuote.referenceText}"` && !mystery.includes('Endgame'),
+  mystery);
+check('the scored label still names the work (post-reveal inspector)',
+  plain.includes('[Avengers: Endgame]'), plain);
+check('the reveal label is "Title (Year)"',
+  sentenceReleaseLabel(sampleQuote) === 'Avengers: Endgame (2019)',
+  sentenceReleaseLabel(sampleQuote));
+check('no practice dropdown leaks a source before the reveal',
+  quotes.every((sentence) => sentenceOptionText(sentence, CATEGORIES, { mystery: true })
+    === mysteryOptionText(sentence)),
+  mysteryOptionText(sample('movies-1')));
+
+/* 8. The CDN copy shipped with the site carries the SAME complete bank. */
 let bank = null;
 try {
   bank = JSON.parse(await readFile(new URL('../public/scenarios.json', import.meta.url), 'utf8'));

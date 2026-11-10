@@ -183,18 +183,18 @@ const LIBRARY = {
       'infinity', 'swimming', 'Watson', 'serious', 'offer'],
     starters: ['May the Force be with you.', 'There is no place like home.', 'I will be back.'],
     items: [
-      ['May the Force be with you.', 'Star Wars', 'Star Wars'],
-      ["There's no place like home.", 'The Wizard of Oz', 'The Wizard of Oz'],
-      ['Houston, we have a problem.', 'Apollo 13', 'Apollo 13'],
-      ["I'll be back.", 'The Terminator', 'The Terminator'],
-      ["Here's looking at you, kid.", 'Casablanca', 'Casablanca'],
-      ["You're gonna need a bigger boat.", 'Jaws', 'Jaws'],
-      ['Life is like a box of chocolates.', 'Forrest Gump', 'Forrest Gump'],
-      ['To infinity and beyond!', 'Toy Story', 'Toy Story'],
-      ['Just keep swimming.', 'Finding Nemo', 'Finding Nemo'],
-      ['Elementary, my dear Watson.', 'Sherlock Holmes', 'Sherlock Holmes'],
-      ['Why so serious?', 'The Dark Knight', 'The Dark Knight'],
-      ["I'll make him an offer he cannot refuse.", 'The Godfather', 'The Godfather']
+      ['May the Force be with you.', 'Star Wars', 'Star Wars · 1977'],
+      ["There's no place like home.", 'The Wizard of Oz', 'The Wizard of Oz · 1939'],
+      ['Houston, we have a problem.', 'Apollo 13', 'Apollo 13 · 1995'],
+      ["I'll be back.", 'The Terminator', 'The Terminator · 1984'],
+      ["Here's looking at you, kid.", 'Casablanca', 'Casablanca · 1942'],
+      ["You're gonna need a bigger boat.", 'Jaws', 'Jaws · 1975'],
+      ['Life is like a box of chocolates.', 'Forrest Gump', 'Forrest Gump · 1994'],
+      ['To infinity and beyond!', 'Toy Story', 'Toy Story · 1995'],
+      ['Just keep swimming.', 'Finding Nemo', 'Finding Nemo · 2003'],
+      ['Elementary, my dear Watson.', 'Sherlock Holmes', 'Sherlock Holmes · 2009'],
+      ['Why so serious?', 'The Dark Knight', 'The Dark Knight · 2008'],
+      ["I'll make him an offer he cannot refuse.", 'The Godfather', 'The Godfather · 1972']
     ]
   },
   songs: {
@@ -208,16 +208,16 @@ const LIBRARY = {
       'darkness', 'mountain', 'beautiful day', 'imagine', 'peace'],
     starters: ['Here comes the sun.', 'We will rock you.', 'What a wonderful world.'],
     items: [
-      ["Here comes the sun, and I say it's all right.", 'The Beatles', 'The Beatles'],
-      ["Don't stop believin', hold on to that feelin'.", 'Journey', 'Journey'],
-      ['We will, we will rock you.', 'Queen', 'Queen'],
-      ['Every breath you take, every move you make.', 'The Police', 'The Police'],
-      ['I walk a lonely road, the only one that I have ever known.', 'Green Day', 'Green Day'],
-      ['What a wonderful world.', 'Louis Armstrong', 'Louis Armstrong'],
-      ['Hello darkness, my old friend.', 'Simon & Garfunkel', 'Simon & Garfunkel'],
-      ["Ain't no mountain high enough.", 'Marvin Gaye & Tammi Terrell', 'Marvin Gaye & Tammi Terrell'],
-      ["It's a beautiful day, don't let it get away.", 'U2', 'U2'],
-      ['Imagine all the people living life in peace.', 'John Lennon', 'John Lennon']
+      ["Here comes the sun, and I say it's all right.", 'The Beatles', 'The Beatles · 1969'],
+      ["Don't stop believin', hold on to that feelin'.", 'Journey', 'Journey · 1981'],
+      ['We will, we will rock you.', 'Queen', 'Queen · 1977'],
+      ['Every breath you take, every move you make.', 'The Police', 'The Police · 1983'],
+      ['I walk a lonely road, the only one that I have ever known.', 'Green Day', 'Green Day · 2004'],
+      ['What a wonderful world.', 'Louis Armstrong', 'Louis Armstrong · 1967'],
+      ['Hello darkness, my old friend.', 'Simon & Garfunkel', 'Simon & Garfunkel · 1964'],
+      ["Ain't no mountain high enough.", 'Marvin Gaye & Tammi Terrell', 'Marvin Gaye & Tammi Terrell · 1967'],
+      ["It's a beautiful day, don't let it get away.", 'U2', 'U2 · 2000'],
+      ['Imagine all the people living life in peace.', 'John Lennon', 'John Lennon · 1971']
     ]
   }
 };
@@ -390,6 +390,26 @@ function normalizeItem(item) {
   };
 }
 
+/**
+ * Release metadata for the v1.1.0 generation slider + mystery reveal.
+ *
+ * `source` is the human string shown after a successful reveal, e.g.
+ *   'The Lord of the Rings · 2001'   -> title 'The Lord of the Rings', year 2001
+ *   'Céline Dion · Titanic · 1997'   -> title 'Céline Dion', year 1997
+ * The year is the LAST 19xx/20xx token, so a film and its soundtrack song keep
+ * distinct media while sharing the same era.
+ */
+function releaseYear(source) {
+  const years = String(source || '').match(/\b(19\d{2}|20\d{2})\b/g);
+  return years && years.length ? Number(years[years.length - 1]) : null;
+}
+
+/** The work / artist shown big in the reveal (`The Lord of the Rings`). */
+function releaseTitle(source) {
+  const text = String(source || '').split('·')[0].trim();
+  return text || null;
+}
+
 const SENTENCES = [];
 Object.entries(LIBRARY).forEach(([categoryId, category]) => {
   const meta = CATEGORIES.find((entry) => entry.id === categoryId);
@@ -397,6 +417,7 @@ Object.entries(LIBRARY).forEach(([categoryId, category]) => {
   category.items.forEach((raw, index) => {
     const item = normalizeItem(raw);
     const text = item.text;
+    const source = isQuote ? (item.source || item.label || null) : null;
     SENTENCES.push({
       id: `${categoryId}-${index + 1}`,
       category: categoryId,
@@ -412,7 +433,10 @@ Object.entries(LIBRARY).forEach(([categoryId, category]) => {
       // Three-tier picker filter: scenario | movie | song.
       medium: item.medium || meta.medium,
       ja: item.ja || JA[text] || null,
-      source: isQuote ? (item.source || item.label || null) : null,
+      source,
+      // v1.1.0: mystery metadata stays hidden until the learner scores 80+.
+      title: releaseTitle(source),
+      year: releaseYear(source),
       focus: category.tip,
       keywords: category.keywords,
       starters: category.starters,
@@ -451,5 +475,9 @@ module.exports = {
   DEFAULT_SCENARIO_ID,
   getScenario,
   getCategory,
-  practiceBrief
+  practiceBrief,
+  // v1.1.0 release metadata (also used by scripts/auth-telemetry-check.mjs)
+  releaseYear,
+  releaseTitle
 };
+

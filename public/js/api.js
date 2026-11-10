@@ -81,6 +81,9 @@ function notifyUsageLimit(payload, status) {
 /** Lets the app show the passcode dialog whenever a request is refused. */
 function notifyAccessRequired(payload) {
   if (typeof window === 'undefined' || typeof window.dispatchEvent !== 'function') return;
+  // Only the deployment passcode should open that dialog. A wrong participant
+  // PIN is also a 401, but it is answered inside the login modal instead.
+  if (payload && payload.error && payload.error !== 'access_code_required') return;
   window.dispatchEvent(new CustomEvent('fb:access-required', { detail: payload || null }));
 }
 
@@ -139,6 +142,24 @@ export async function lockSession() {
 
 export const assessAudio = (payload) => jsonRequest('/api/assess', 'POST', payload);
 export const chatRecast = (payload) => jsonRequest('/api/chat', 'POST', payload);
+
+/* --------------------------- v1.1.0: identity ---------------------------- */
+
+/**
+ * LinguaBridge roster sign-in.
+ * @param {{studentId: string, pin: string}} credentials
+ * @returns {Promise<{ok: boolean, studentId: string, pseudonym: string, role: 'student'}>}
+ */
+export const authLogin = ({ studentId, pin }) => jsonRequest('/api/auth/login', 'POST', { studentId, pin });
+
+/** One-click guest id (`guest_xxxxxx`) from the server. */
+export const authGuest = () => jsonRequest('/api/auth/guest', 'POST', {});
+
+/**
+ * Telemetry: one record per scored turn. The server adds id, timestamp and
+ * app_version, and appends to Netlify Blobs (production) or data/interactions.json.
+ */
+export const postInteraction = (payload) => jsonRequest('/api/interactions', 'POST', payload);
 
 export async function azureTts({ text, rate = 0.85, voice, phoneme }) {
   const response = await fetch('/api/tts', {
